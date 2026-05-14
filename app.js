@@ -630,6 +630,10 @@ class FengShuiApp {
         this.currentPage = page;
     }
 
+    navigateTo(page) {
+        this.switchPage(page);
+    }
+
     showDailyTips() {
         const tips = [
             { yi: '嫁娶、开市、交易', ji: '动土、安葬' },
@@ -1326,18 +1330,11 @@ class FengShuiApp {
     }
 
     updateUI() {
-        // 更新头部
-        if (this.userData.isLoggedIn) {
-            document.getElementById('user-avatar').textContent = '👤';
-        }
-        
         // 更新个人中心
         if (this.userData.isLoggedIn) {
             document.getElementById('profile-name').textContent = this.userData.name;
             document.getElementById('profile-status').textContent = this.userData.isVip ? 'VIP会员' : '普通用户';
             document.getElementById('profile-login-btn').style.display = 'none';
-            document.getElementById('profile-menu').classList.remove('hidden');
-            document.getElementById('profile-stats').classList.remove('hidden');
             
             if (this.userData.isVip) {
                 document.getElementById('vip-status').classList.remove('hidden');
@@ -1345,12 +1342,16 @@ class FengShuiApp {
                 document.getElementById('vip-expire').textContent = `到期: ${expireDate.toLocaleDateString()}`;
                 
                 // VIP用户显示合婚内容
-                document.getElementById('hehun-premium').classList.add('hidden');
-                document.getElementById('hehun-content').classList.remove('hidden');
+                const hehunPremium = document.getElementById('hehun-premium');
+                const hehunContent = document.getElementById('hehun-content');
+                if (hehunPremium) hehunPremium.classList.add('hidden');
+                if (hehunContent) hehunContent.classList.remove('hidden');
                 
                 // 隐藏VIP解锁提示
-                document.getElementById('fortune-unlock').classList.add('hidden');
-                document.getElementById('fortune-blur').style.webkitMaskImage = 'none';
+                const fortuneUnlock = document.getElementById('fortune-unlock');
+                const fortuneBlur = document.getElementById('fortune-blur');
+                if (fortuneUnlock) fortuneUnlock.classList.add('hidden');
+                if (fortuneBlur) fortuneBlur.style.webkitMaskImage = 'none';
             }
             
             this.updateProfileStats();
@@ -1358,8 +1359,6 @@ class FengShuiApp {
             document.getElementById('profile-name').textContent = '未登录';
             document.getElementById('profile-status').textContent = '点击登录解锁更多功能';
             document.getElementById('profile-login-btn').style.display = 'block';
-            document.getElementById('profile-menu').classList.add('hidden');
-            document.getElementById('profile-stats').classList.add('hidden');
             document.getElementById('vip-status').classList.add('hidden');
         }
     }
