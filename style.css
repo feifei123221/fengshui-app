@@ -107,6 +107,7 @@ body {
     background: rgba(255,255,255,0.05);
     border-radius: 15px;
     padding: 30px;
+    padding-bottom: 120px;
     backdrop-filter: blur(10px);
 }
 
@@ -2026,6 +2027,7 @@ select option:checked {
     
     .main-content {
         padding: 15px;
+        padding-bottom: 100px;
         border-radius: 0;
         min-height: calc(100vh - 120px);
     }
