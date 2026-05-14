@@ -484,150 +484,284 @@ class FengShuiApp {
     }
 
     init() {
-        this.bindEvents();
-        this.showDailyTips();
-        this.renderCalendar();
-        this.renderKnowledge();
-        this.renderHomeFengshui('entrance');
-        this.renderOfficeFengshui('desk');
-        this.updateCompassDisplay();
-        this.renderSceneContent('home');
-        this.renderShanshanGrid();
-        this.renderMascotsContent('wealth');
-        this.initSelectors();
-        this.initAuth();
-        this.initFortune();
-        this.initHehun();
-        this.initShop();
+        try {
+            // 安全执行初始化的辅助函数
+            const safeInit = (fnName, fn) => {
+                try {
+                    fn.call(this);
+                } catch (error) {
+                    console.error(`初始化 ${fnName} 失败:`, error);
+                }
+            };
+            
+            safeInit('bindEvents', this.bindEvents);
+            safeInit('showDailyTips', this.showDailyTips);
+            safeInit('renderCalendar', this.renderCalendar);
+            safeInit('renderKnowledge', this.renderKnowledge);
+            safeInit('renderHomeFengshui', () => this.renderHomeFengshui('entrance'));
+            safeInit('renderOfficeFengshui', () => this.renderOfficeFengshui('desk'));
+            safeInit('updateCompassDisplay', this.updateCompassDisplay);
+            safeInit('renderSceneContent', () => this.renderSceneContent('home'));
+            safeInit('renderShanshanGrid', this.renderShanshanGrid);
+            safeInit('renderMascotsContent', () => this.renderMascotsContent('wealth'));
+            safeInit('initSelectors', this.initSelectors);
+            safeInit('initAuth', this.initAuth);
+            safeInit('initFortune', this.initFortune);
+            safeInit('initHehun', this.initHehun);
+            safeInit('initShop', this.initShop);
+            
+            console.log('风水APP初始化完成！');
+        } catch (globalError) {
+            console.error('全局初始化失败:', globalError);
+        }
     }
 
     initSelectors() {
-        // 初始化十二时辰选择器
-        document.querySelectorAll('.shichen-item').forEach(item => {
-            item.addEventListener('click', () => {
-                document.querySelectorAll('.shichen-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                document.getElementById('bazi-time').value = item.dataset.value;
+        try {
+            // 安全查询选择器
+            const safeQueryAll = (selector) => {
+                try {
+                    return document.querySelectorAll(selector);
+                } catch (e) {
+                    return [];
+                }
+            };
+            
+            const safeQueryOne = (selector) => {
+                try {
+                    return document.querySelector(selector);
+                } catch (e) {
+                    return null;
+                }
+            };
+            
+            // 初始化十二时辰选择器
+            const shichenItems = safeQueryAll('.shichen-item');
+            shichenItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    try {
+                        shichenItems.forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        const input = document.getElementById('bazi-time');
+                        if (input) input.value = item.dataset.value;
+                    } catch (e) {
+                        console.error('选择时辰出错:', e);
+                    }
+                });
             });
-        });
-        // 默认选中第一个
-        document.querySelector('.shichen-item').classList.add('active');
+            // 默认选中第一个
+            if (shichenItems[0]) shichenItems[0].classList.add('active');
 
-        // 初始化八宅选择器
-        document.querySelectorAll('.bazhai-item').forEach(item => {
-            item.addEventListener('click', () => {
-                document.querySelectorAll('.bazhai-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                document.getElementById('bazhai-direction').value = item.dataset.value;
+            // 初始化八宅选择器
+            const bazhaiItems = safeQueryAll('.bazhai-item');
+            bazhaiItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    try {
+                        bazhaiItems.forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        const input = document.getElementById('bazhai-direction');
+                        if (input) input.value = item.dataset.value;
+                    } catch (e) {
+                        console.error('选择八宅出错:', e);
+                    }
+                });
             });
-        });
-        // 默认选中第一个
-        document.querySelector('.bazhai-item').classList.add('active');
+            // 默认选中第一个
+            if (bazhaiItems[0]) bazhaiItems[0].classList.add('active');
+        } catch (error) {
+            console.error('初始化选择器出错:', error);
+        }
     }
 
     bindEvents() {
-        document.querySelectorAll('.nav-btn, .nav-item').forEach(btn => {
-            btn.addEventListener('click', () => this.switchPage(btn.dataset.page));
-        });
-
-        document.querySelectorAll('.feature-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const page = card.dataset.page;
-                const isPremium = card.classList.contains('premium');
-                
-                if (isPremium) {
-                    // 检查是否登录
-                    if (!this.userData.isLoggedIn) {
-                        alert('请先登录后再使用此功能！');
-                        this.showAuthModal();
-                        return;
-                    }
-                    // 检查是否是VIP
-                    if (!this.userData.isVip) {
-                        alert('此功能需要开通VIP会员才能使用！');
-                        this.showVipModal();
-                        return;
-                    }
+        try {
+            // 安全辅助函数
+            const safeQueryAll = (selector) => {
+                try {
+                    return document.querySelectorAll(selector);
+                } catch (e) {
+                    return [];
                 }
-                
-                // 权限通过，正常跳转
-                this.switchPage(page);
-            });
-        });
-
-        document.querySelector('.compass-wrapper').addEventListener('click', () => this.rotateCompass());
-        
-        document.getElementById('rotate-left').addEventListener('click', () => this.rotateCompass(-45));
-        document.getElementById('rotate-right').addEventListener('click', () => this.rotateCompass(45));
-        document.getElementById('reset-compass').addEventListener('click', () => this.resetCompass());
-
-        document.getElementById('calc-bazi').addEventListener('click', () => this.calculateBazi());
-        document.getElementById('calc-bazhai').addEventListener('click', () => this.calculateBazhai());
-
-        document.querySelectorAll('.compass-tabs .tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.compass-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.querySelectorAll('.compass-tab-content').forEach(c => c.classList.add('hidden'));
-                document.getElementById(btn.dataset.tab).classList.remove('hidden');
-            });
-        });
-
-        document.querySelectorAll('.fengshui-tabs .tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.fengshui-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const container = btn.closest('.home-fengshui-container, .office-fengshui-container');
-                if (container.classList.contains('home-fengshui-container')) {
-                    this.renderHomeFengshui(btn.dataset.tab);
-                } else {
-                    this.renderOfficeFengshui(btn.dataset.tab);
+            };
+            
+            const safeBindById = (id, handler) => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('click', handler);
+            };
+            
+            const safeBindByQuery = (selector, handler) => {
+                safeQueryAll(selector).forEach(el => {
+                    el.addEventListener('click', handler);
+                });
+            };
+            
+            // 导航按钮
+            safeBindByQuery('.nav-btn, .nav-item', (e) => {
+                try {
+                    const page = e.currentTarget.dataset.page;
+                    if (page) this.switchPage(page);
+                } catch (err) {
+                    console.error('导航点击出错:', err);
                 }
             });
-        });
 
-        document.querySelectorAll('.mascots-tabs .tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.mascots-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.renderMascotsContent(btn.dataset.tab);
+            // 功能卡片（已优化）
+            safeQueryAll('.feature-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    try {
+                        const page = card.dataset.page;
+                        const isPremium = card.classList.contains('premium');
+                        
+                        if (isPremium) {
+                            if (!this.userData.isLoggedIn) {
+                                this.showAuthModal();
+                                return;
+                            }
+                            if (!this.userData.isVip) {
+                                this.showVipModal();
+                                return;
+                            }
+                        }
+                        
+                        this.switchPage(page);
+                    } catch (error) {
+                        console.error('功能卡片点击出错:', error);
+                    }
+                });
             });
-        });
 
-        document.querySelectorAll('.scene-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.renderSceneContent(btn.dataset.scene);
+            // 罗盘功能
+            const compassWrapper = document.querySelector('.compass-wrapper');
+            if (compassWrapper) {
+                compassWrapper.addEventListener('click', () => this.rotateCompass());
+            }
+            
+            safeBindById('rotate-left', () => this.rotateCompass(-45));
+            safeBindById('rotate-right', () => this.rotateCompass(45));
+            safeBindById('reset-compass', () => this.resetCompass());
+
+            // 测算按钮
+            safeBindById('calc-bazi', () => this.calculateBazi());
+            safeBindById('calc-bazhai', () => this.calculateBazhai());
+
+            // 罗盘标签页
+            safeQueryAll('.compass-tabs .tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    try {
+                        safeQueryAll('.compass-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        safeQueryAll('.compass-tab-content').forEach(c => c.classList.add('hidden'));
+                        const tabId = btn.dataset.tab;
+                        const tabContent = document.getElementById(tabId);
+                        if (tabContent) tabContent.classList.remove('hidden');
+                    } catch (err) {
+                        console.error('罗盘标签页切换出错:', err);
+                    }
+                });
             });
-        });
 
-        document.getElementById('prev-month').addEventListener('click', () => {
-            this.currentMonth.setMonth(this.currentMonth.getMonth() - 1);
-            this.renderCalendar();
-        });
-
-        document.getElementById('next-month').addEventListener('click', () => {
-            this.currentMonth.setMonth(this.currentMonth.getMonth() + 1);
-            this.renderCalendar();
-        });
-
-        // 大师咨询按钮
-        document.querySelectorAll('.consult-btn, #submit-consult').forEach(btn => {
-            btn.addEventListener('click', () => {
-                alert('感谢您的咨询！我们会尽快与您联系！');
+            // 风水标签页
+            safeQueryAll('.fengshui-tabs .tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    try {
+                        safeQueryAll('.fengshui-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        const container = btn.closest('.home-fengshui-container, .office-fengshui-container');
+                        if (container?.classList.contains('home-fengshui-container')) {
+                            this.renderHomeFengshui(btn.dataset.tab);
+                        } else if (container) {
+                            this.renderOfficeFengshui(btn.dataset.tab);
+                        }
+                    } catch (err) {
+                        console.error('风水标签页切换出错:', err);
+                    }
+                });
             });
-        });
+
+            // 吉祥物标签页
+            safeQueryAll('.mascots-tabs .tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    try {
+                        safeQueryAll('.mascots-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        this.renderMascotsContent(btn.dataset.tab);
+                    } catch (err) {
+                        console.error('吉祥物标签页切换出错:', err);
+                    }
+                });
+            });
+
+            // 场景按钮
+            safeQueryAll('.scene-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    try {
+                        safeQueryAll('.scene-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        this.renderSceneContent(btn.dataset.scene);
+                    } catch (err) {
+                        console.error('场景切换出错:', err);
+                    }
+                });
+            });
+
+            // 日历导航
+            safeBindById('prev-month', () => {
+                try {
+                    this.currentMonth.setMonth(this.currentMonth.getMonth() - 1);
+                    this.renderCalendar();
+                } catch (err) {
+                    console.error('日历上月出错:', err);
+                }
+            });
+
+            safeBindById('next-month', () => {
+                try {
+                    this.currentMonth.setMonth(this.currentMonth.getMonth() + 1);
+                    this.renderCalendar();
+                } catch (err) {
+                    console.error('日历下月出错:', err);
+                }
+            });
+            
+            // 大师咨询按钮
+            safeQueryAll('.consult-btn, #submit-consult').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    this.showToast('感谢您的咨询！我们会尽快与您联系！');
+                });
+            });
+        } catch (globalError) {
+            console.error('绑定事件全局出错:', globalError);
+        }
     }
 
     switchPage(page) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-btn, .nav-item').forEach(btn => btn.classList.remove('active'));
-        
-        document.getElementById(`page-${page}`).classList.add('active');
-        document.querySelector(`.nav-btn[data-page="${page}"]`)?.classList.add('active');
-        document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add('active');
-        this.currentPage = page;
+        try {
+            if (!page) return;
+            
+            const safeQueryAll = (selector) => {
+                try {
+                    return document.querySelectorAll(selector);
+                } catch (e) {
+                    return [];
+                }
+            };
+            
+            safeQueryAll('.page').forEach(p => p.classList.remove('active'));
+            safeQueryAll('.nav-btn, .nav-item').forEach(btn => btn.classList.remove('active'));
+            
+            const targetPage = document.getElementById(`page-${page}`);
+            if (targetPage) targetPage.classList.add('active');
+            
+            const navBtn = document.querySelector(`.nav-btn[data-page="${page}"]`);
+            if (navBtn) navBtn.classList.add('active');
+            
+            const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
+            if (navItem) navItem.classList.add('active');
+            
+            this.currentPage = page;
+        } catch (error) {
+            console.error('页面切换出错:', error);
+        }
     }
 
     navigateTo(page) {
@@ -635,45 +769,79 @@ class FengShuiApp {
     }
 
     showDailyTips() {
-        const tips = [
-            { yi: '嫁娶、开市、交易', ji: '动土、安葬' },
-            { yi: '祭祀、祈福、求嗣', ji: '嫁娶、移徙' },
-            { yi: '出行、搬家、修造', ji: '开光、嫁娶' },
-            { yi: '纳财、开市、交易', ji: '动土、破土' }
-        ];
-        const today = tips[Math.floor(Math.random() * tips.length)];
-        document.getElementById('daily-tips-content').innerHTML = `
-            <p><strong style="color: #4ade80;">宜：</strong>${today.yi}</p>
-            <p><strong style="color: #ff6b6b;">忌：</strong>${today.ji}</p>
-        `;
+        try {
+            const tips = [
+                { yi: '嫁娶、开市、交易', ji: '动土、安葬' },
+                { yi: '祭祀、祈福、求嗣', ji: '嫁娶、移徙' },
+                { yi: '出行、搬家、修造', ji: '开光、嫁娶' },
+                { yi: '纳财、开市、交易', ji: '动土、破土' }
+            ];
+            const today = tips[Math.floor(Math.random() * tips.length)];
+            const tipsContent = document.getElementById('daily-tips-content');
+            if (tipsContent) {
+                tipsContent.innerHTML = `
+                    <p><strong style="color: #4ade80;">宜：</strong>${today.yi}</p>
+                    <p><strong style="color: #ff6b6b;">忌：</strong>${today.ji}</p>
+                `;
+            }
+        } catch (error) {
+            console.error('显示每日宜忌出错:', error);
+        }
     }
 
     rotateCompass(delta = 45) {
-        this.compassAngle = (this.compassAngle + delta + 360) % 360;
-        document.querySelector('.compass-needle').style.transform = 
-            `translate(-50%, -50%) rotate(${this.compassAngle}deg)`;
-        this.updateCompassDisplay();
+        try {
+            this.compassAngle = (this.compassAngle + delta + 360) % 360;
+            const needle = document.querySelector('.compass-needle');
+            if (needle) {
+                needle.style.transform = 
+                    `translate(-50%, -50%) rotate(${this.compassAngle}deg)`;
+            }
+            this.updateCompassDisplay();
+        } catch (error) {
+            console.error('旋转罗盘出错:', error);
+        }
     }
 
     resetCompass() {
-        this.compassAngle = 0;
-        document.querySelector('.compass-needle').style.transform = 
-            'translate(-50%, -50%) rotate(0deg)';
-        this.updateCompassDisplay();
+        try {
+            this.compassAngle = 0;
+            const needle = document.querySelector('.compass-needle');
+            if (needle) {
+                needle.style.transform = 
+                    'translate(-50%, -50%) rotate(0deg)';
+            }
+            this.updateCompassDisplay();
+        } catch (error) {
+            console.error('重置罗盘出错:', error);
+        }
     }
 
     updateCompassDisplay() {
-        const normalizedAngle = (360 - this.compassAngle) % 360;
-        const direction = this.getDirectionByAngle(normalizedAngle);
-        
-        document.getElementById('compass-direction').textContent = direction.name;
-        document.getElementById('compass-angle').textContent = `${this.compassAngle}°`;
-        document.getElementById('compass-element').textContent = direction.element;
-        document.getElementById('compass-gua').textContent = direction.gua;
-        document.getElementById('compass-interpretation').innerHTML = `
-            <h4>方位解读</h4>
-            <p>${direction.name}属${direction.element}，对应${direction.gua}卦，${direction.meaning}</p>
-        `;
+        try {
+            const normalizedAngle = (360 - this.compassAngle) % 360;
+            const direction = this.getDirectionByAngle(normalizedAngle);
+            
+            const el1 = document.getElementById('compass-direction');
+            if (el1) el1.textContent = direction.name;
+            
+            const el2 = document.getElementById('compass-angle');
+            if (el2) el2.textContent = `${this.compassAngle}°`;
+            
+            const el3 = document.getElementById('compass-element');
+            if (el3) el3.textContent = direction.element;
+            
+            const el4 = document.getElementById('compass-gua');
+            if (el4) el4.textContent = direction.gua;
+            
+            const el5 = document.getElementById('compass-interpretation');
+            if (el5) el5.innerHTML = `
+                <h4>方位解读</h4>
+                <p>${direction.name}属${direction.element}，对应${direction.gua}卦，${direction.meaning}</p>
+            `;
+        } catch (error) {
+            console.error('更新罗盘显示出错:', error);
+        }
     }
 
     getDirectionByAngle(angle) {
@@ -696,67 +864,80 @@ class FengShuiApp {
     }
 
     calculateBazi() {
-        const name = document.getElementById('bazi-name').value || '缘主';
-        const gender = document.getElementById('bazi-gender').value;
-        const date = document.getElementById('bazi-date').value;
-        const time = document.getElementById('bazi-time').value;
+        try {
+            const nameEl = document.getElementById('bazi-name');
+            const genderEl = document.getElementById('bazi-gender');
+            const dateEl = document.getElementById('bazi-date');
+            const timeEl = document.getElementById('bazi-time');
+            
+            const name = nameEl?.value || '缘主';
+            const gender = genderEl?.value || 'male';
+            const date = dateEl?.value || '';
+            const time = timeEl?.value || '0';
 
-        if (!date) {
-            alert('请选择出生日期');
-            return;
+            if (!date) {
+                this.showToast('请选择出生日期');
+                return;
+            }
+
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const yearTG = TIANGAN[(year - 4) % 10];
+            const yearDZ = DIZHI[(year - 4) % 12];
+            const shengxiao = SHENGXIAO[(year - 4) % 12];
+
+            const month = d.getMonth() + 1;
+            const monthTG = TIANGAN[(month + 1) % 10];
+            const monthDZ = DIZHI[(month + 1) % 12];
+
+            const dayTG = TIANGAN[d.getDate() % 10];
+            const dayDZ = DIZHI[d.getDate() % 12];
+
+            const timeIndex = parseInt(time);
+            const timeDZIndex = timeIndex >= 23 ? 0 : Math.floor((timeIndex - 1) / 2);
+            const timeTG = TIANGAN[timeDZIndex % 10];
+            const timeDZ = DIZHI[timeDZIndex];
+
+            const bazi = [
+                { tg: yearTG, dz: yearDZ },
+                { tg: monthTG, dz: monthDZ },
+                { tg: dayTG, dz: dayDZ },
+                { tg: timeTG, dz: timeDZ }
+            ];
+
+            const elements = this.analyzeElements(bazi);
+            const destiny = this.getDestinyAnalysis(elements, gender);
+
+            const resultEl = document.getElementById('bazi-result');
+            if (resultEl) {
+                resultEl.innerHTML = `
+                    <h3 style="color: #dc143c; margin-bottom: 20px;">${name}的八字测算结果</h3>
+                    <div style="background: rgba(220,20,60,0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <div style="font-size: 28px; text-align: center; letter-spacing: 10px; margin-bottom: 10px;">
+                            ${yearTG}${yearDZ} ${monthTG}${monthDZ} ${dayTG}${dayDZ} ${timeTG}${timeDZ}
+                        </div>
+                        <p style="text-align: center; color: #b0b0b0;">生肖：${shengxiao}</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #dc143c; margin-bottom: 10px;">五行分析</h4>
+                        <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px;">
+                            <span style="background: #ffeaa7; padding: 8px 15px; border-radius: 8px; color: #333;">金: ${elements.jin}</span>
+                            <span style="background: #81ecec; padding: 8px 15px; border-radius: 8px; color: #333;">木: ${elements.mu}</span>
+                            <span style="background: #74b9ff; padding: 8px 15px; border-radius: 8px; color: #333;">水: ${elements.shui}</span>
+                            <span style="background: #ff7675; padding: 8px 15px; border-radius: 8px; color: #333;">火: ${elements.huo}</span>
+                            <span style="background: #fdcb6e; padding: 8px 15px; border-radius: 8px; color: #333;">土: ${elements.tu}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="color: #dc143c; margin-bottom: 10px;">命运简析</h4>
+                        <p style="line-height: 2; color: #b0b0b0;">${destiny}</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('八字测算出错:', error);
+            this.showToast('八字测算出错，请重试');
         }
-
-        const d = new Date(date);
-        const year = d.getFullYear();
-        const yearTG = TIANGAN[(year - 4) % 10];
-        const yearDZ = DIZHI[(year - 4) % 12];
-        const shengxiao = SHENGXIAO[(year - 4) % 12];
-
-        const month = d.getMonth() + 1;
-        const monthTG = TIANGAN[(month + 1) % 10];
-        const monthDZ = DIZHI[(month + 1) % 12];
-
-        const dayTG = TIANGAN[d.getDate() % 10];
-        const dayDZ = DIZHI[d.getDate() % 12];
-
-        const timeIndex = parseInt(time);
-        const timeDZIndex = timeIndex >= 23 ? 0 : Math.floor((timeIndex - 1) / 2);
-        const timeTG = TIANGAN[timeDZIndex % 10];
-        const timeDZ = DIZHI[timeDZIndex];
-
-        const bazi = [
-            { tg: yearTG, dz: yearDZ },
-            { tg: monthTG, dz: monthDZ },
-            { tg: dayTG, dz: dayDZ },
-            { tg: timeTG, dz: timeDZ }
-        ];
-
-        const elements = this.analyzeElements(bazi);
-        const destiny = this.getDestinyAnalysis(elements, gender);
-
-        document.getElementById('bazi-result').innerHTML = `
-            <h3 style="color: #dc143c; margin-bottom: 20px;">${name}的八字测算结果</h3>
-            <div style="background: rgba(220,20,60,0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                <div style="font-size: 28px; text-align: center; letter-spacing: 10px; margin-bottom: 10px;">
-                    ${yearTG}${yearDZ} ${monthTG}${monthDZ} ${dayTG}${dayDZ} ${timeTG}${timeDZ}
-                </div>
-                <p style="text-align: center; color: #b0b0b0;">生肖：${shengxiao}</p>
-            </div>
-            <div style="margin-bottom: 20px;">
-                <h4 style="color: #dc143c; margin-bottom: 10px;">五行分析</h4>
-                <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px;">
-                    <span style="background: #ffeaa7; padding: 8px 15px; border-radius: 8px; color: #333;">金: ${elements.jin}</span>
-                    <span style="background: #81ecec; padding: 8px 15px; border-radius: 8px; color: #333;">木: ${elements.mu}</span>
-                    <span style="background: #74b9ff; padding: 8px 15px; border-radius: 8px; color: #333;">水: ${elements.shui}</span>
-                    <span style="background: #ff7675; padding: 8px 15px; border-radius: 8px; color: #333;">火: ${elements.huo}</span>
-                    <span style="background: #fdcb6e; padding: 8px 15px; border-radius: 8px; color: #333;">土: ${elements.tu}</span>
-                </div>
-            </div>
-            <div>
-                <h4 style="color: #dc143c; margin-bottom: 10px;">命运简析</h4>
-                <p style="line-height: 2; color: #b0b0b0;">${destiny}</p>
-            </div>
-        `;
     }
 
     analyzeElements(bazi) {
@@ -1128,204 +1309,289 @@ class FengShuiApp {
 
     // 用户系统
     initAuth() {
-        this.loadUserData();
-        
-        // 用户按钮
-        document.getElementById('user-btn').addEventListener('click', () => {
-            if (this.userData.isLoggedIn) {
-                this.navigateTo('profile');
-            } else {
-                this.showAuthModal();
-            }
-        });
-        
-        // VIP按钮
-        document.getElementById('vip-btn').addEventListener('click', () => {
-            this.showVipModal();
-        });
-        
-        // 首页VIP按钮
-        document.getElementById('home-vip-btn').addEventListener('click', () => {
-            this.showVipModal();
-        });
-        
-        // 登录/注册切换
-        document.querySelectorAll('.auth-tab').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const type = btn.dataset.auth;
-                if (type === 'login') {
-                    document.getElementById('login-form').classList.remove('hidden');
-                    document.getElementById('register-form').classList.add('hidden');
-                } else {
-                    document.getElementById('login-form').classList.add('hidden');
-                    document.getElementById('register-form').classList.remove('hidden');
+        try {
+            this.loadUserData();
+            
+            // 安全辅助函数
+            const safeBind = (id, handler) => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('click', handler);
+            };
+            
+            // 安全查询选择器
+            const safeQueryAll = (selector) => {
+                try {
+                    return document.querySelectorAll(selector);
+                } catch (e) {
+                    return [];
                 }
+            };
+            
+            // 首页VIP按钮（如果存在）
+            safeBind('home-vip-btn', () => this.showVipModal());
+            
+            // 登录/注册切换
+            safeQueryAll('.auth-tab').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    try {
+                        safeQueryAll('.auth-tab').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        const type = btn.dataset.auth;
+                        const loginForm = document.getElementById('login-form');
+                        const registerForm = document.getElementById('register-form');
+                        
+                        if (loginForm && registerForm) {
+                            if (type === 'login') {
+                                loginForm.classList.remove('hidden');
+                                registerForm.classList.add('hidden');
+                            } else {
+                                loginForm.classList.add('hidden');
+                                registerForm.classList.remove('hidden');
+                            }
+                        }
+                    } catch (e) {
+                        console.error('切换登录/注册出错:', e);
+                    }
+                });
             });
-        });
-        
-        document.querySelectorAll('.switch-auth').forEach(el => {
-            el.addEventListener('click', () => {
-                const isLogin = !document.getElementById('login-form').classList.contains('hidden');
-                if (isLogin) {
-                    document.querySelectorAll('.auth-tab')[0].classList.remove('active');
-                    document.querySelectorAll('.auth-tab')[1].classList.add('active');
-                    document.getElementById('login-form').classList.add('hidden');
-                    document.getElementById('register-form').classList.remove('hidden');
-                } else {
-                    document.querySelectorAll('.auth-tab')[0].classList.add('active');
-                    document.querySelectorAll('.auth-tab')[1].classList.remove('active');
-                    document.getElementById('login-form').classList.remove('hidden');
-                    document.getElementById('register-form').classList.add('hidden');
-                }
+            
+            safeQueryAll('.switch-auth').forEach(el => {
+                el.addEventListener('click', () => {
+                    try {
+                        const loginForm = document.getElementById('login-form');
+                        const registerForm = document.getElementById('register-form');
+                        const tabs = safeQueryAll('.auth-tab');
+                        
+                        if (loginForm && registerForm && tabs.length >= 2) {
+                            const isLogin = !loginForm.classList.contains('hidden');
+                            if (isLogin) {
+                                tabs[0].classList.remove('active');
+                                tabs[1].classList.add('active');
+                                loginForm.classList.add('hidden');
+                                registerForm.classList.remove('hidden');
+                            } else {
+                                tabs[0].classList.add('active');
+                                tabs[1].classList.remove('active');
+                                loginForm.classList.remove('hidden');
+                                registerForm.classList.add('hidden');
+                            }
+                        }
+                    } catch (e) {
+                        console.error('切换表单出错:', e);
+                    }
+                });
             });
-        });
-        
-        // 登录按钮
-        document.getElementById('login-btn').addEventListener('click', () => {
-            this.handleLogin();
-        });
-        
-        // 注册按钮
-        document.getElementById('register-btn').addEventListener('click', () => {
-            this.handleRegister();
-        });
-        
-        // 关闭弹窗
-        document.getElementById('auth-close').addEventListener('click', () => {
-            this.hideAuthModal();
-        });
-        
-        document.getElementById('vip-close').addEventListener('click', () => {
-            this.hideVipModal();
-        });
-        
-        // 广告关闭
-        document.getElementById('ad-close').addEventListener('click', () => {
-            document.getElementById('banner-ad').style.display = 'none';
-        });
-        
-        // 个人中心按钮
-        document.getElementById('profile-login-btn').addEventListener('click', () => {
-            this.showAuthModal();
-        });
-        
-        // 退出登录
-        document.getElementById('menu-logout').addEventListener('click', () => {
-            this.handleLogout();
-        });
-        
-        // 会员菜单
-        document.getElementById('menu-vip').addEventListener('click', () => {
-            this.showVipModal();
-        });
-        
-        // 关闭弹窗点击外部
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.add('hidden');
-                }
+            
+            // 登录按钮
+            safeBind('login-btn', () => this.handleLogin());
+            
+            // 注册按钮
+            safeBind('register-btn', () => this.handleRegister());
+            
+            // 关闭弹窗
+            safeBind('auth-close', () => this.hideAuthModal());
+            safeBind('vip-close', () => this.hideVipModal());
+            
+            // 广告关闭（如果存在）
+            safeBind('ad-close', () => {
+                const ad = document.getElementById('banner-ad');
+                if (ad) ad.style.display = 'none';
             });
-        });
-        
-        // 升级VIP按钮
-        document.querySelectorAll('.vip-plan .btn-vip').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const plan = e.target.closest('.vip-plan').dataset.plan;
-                this.purchaseVip(plan);
+            
+            // 个人中心按钮
+            safeBind('profile-login-btn', () => this.showAuthModal());
+            
+            // 退出登录
+            safeBind('menu-logout', () => this.handleLogout());
+            
+            // 会员菜单
+            safeBind('menu-vip', () => this.showVipModal());
+            
+            // 关闭弹窗点击外部
+            safeQueryAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
             });
-        });
-        
-        this.updateUI();
+            
+            // 升级VIP按钮
+            safeQueryAll('.vip-plan .btn-vip').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    try {
+                        const plan = e.target.closest('.vip-plan')?.dataset.plan;
+                        if (plan) this.purchaseVip(plan);
+                    } catch (e) {
+                        console.error('购买VIP出错:', e);
+                    }
+                });
+            });
+            
+            this.updateUI();
+        } catch (error) {
+            console.error('初始化用户系统出错:', error);
+        }
     }
 
     showAuthModal() {
-        document.getElementById('auth-modal').classList.remove('hidden');
+        try {
+            const modal = document.getElementById('auth-modal');
+            if (modal) modal.classList.remove('hidden');
+        } catch (e) {
+            console.error('显示登录弹窗出错:', e);
+        }
     }
 
     hideAuthModal() {
-        document.getElementById('auth-modal').classList.add('hidden');
+        try {
+            const modal = document.getElementById('auth-modal');
+            if (modal) modal.classList.add('hidden');
+        } catch (e) {
+            console.error('隐藏登录弹窗出错:', e);
+        }
     }
 
     showVipModal() {
-        document.getElementById('vip-modal').classList.remove('hidden');
+        try {
+            const modal = document.getElementById('vip-modal');
+            if (modal) modal.classList.remove('hidden');
+        } catch (e) {
+            console.error('显示VIP弹窗出错:', e);
+        }
     }
 
     hideVipModal() {
-        document.getElementById('vip-modal').classList.add('hidden');
+        try {
+            const modal = document.getElementById('vip-modal');
+            if (modal) modal.classList.add('hidden');
+        } catch (e) {
+            console.error('隐藏VIP弹窗出错:', e);
+        }
+    }
+
+    showToast(message, duration = 2000) {
+        // 创建一个简单的toast提示，替代alert，不会阻塞
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            z-index: 10000;
+            font-size: 16px;
+            text-align: center;
+        `;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            if (document.body.contains(toast)) {
+                document.body.removeChild(toast);
+            }
+        }, duration);
     }
 
     handleLogin() {
-        const account = document.getElementById('login-account').value;
-        const password = document.getElementById('login-password').value;
-        
-        if (!account || !password) {
-            alert('请填写完整信息');
-            return;
+        try {
+            const accountInput = document.getElementById('login-account');
+            const passwordInput = document.getElementById('login-password');
+            
+            const account = accountInput?.value || '';
+            const password = passwordInput?.value || '';
+            
+            if (!account || !password) {
+                this.showToast('请填写完整信息');
+                return;
+            }
+            
+            // 模拟登录
+            this.userData.isLoggedIn = true;
+            this.userData.name = account;
+            this.saveUserData();
+            this.hideAuthModal();
+            this.updateUI();
+            this.showToast('登录成功！');
+        } catch (error) {
+            console.error('登录出错:', error);
+            this.showToast('登录出错，请重试');
         }
-        
-        // 模拟登录
-        this.userData.isLoggedIn = true;
-        this.userData.name = account;
-        this.saveUserData();
-        this.hideAuthModal();
-        this.updateUI();
-        alert('登录成功！');
     }
 
     handleRegister() {
-        const phone = document.getElementById('register-phone').value;
-        const password = document.getElementById('register-password').value;
-        const confirm = document.getElementById('register-confirm').value;
-        
-        if (!phone || !password) {
-            alert('请填写完整信息');
-            return;
+        try {
+            const phoneInput = document.getElementById('register-phone');
+            const passwordInput = document.getElementById('register-password');
+            const confirmInput = document.getElementById('register-confirm');
+            
+            const phone = phoneInput?.value || '';
+            const password = passwordInput?.value || '';
+            const confirm = confirmInput?.value || '';
+            
+            if (!phone || !password) {
+                this.showToast('请填写完整信息');
+                return;
+            }
+            
+            if (password !== confirm) {
+                this.showToast('两次密码不一致');
+                return;
+            }
+            
+            if (password.length < 6) {
+                this.showToast('密码至少6位');
+                return;
+            }
+            
+            // 模拟注册
+            this.userData.isLoggedIn = true;
+            this.userData.name = phone;
+            this.saveUserData();
+            this.hideAuthModal();
+            this.updateUI();
+            this.showToast('注册成功！');
+        } catch (error) {
+            console.error('注册出错:', error);
+            this.showToast('注册出错，请重试');
         }
-        
-        if (password !== confirm) {
-            alert('两次密码不一致');
-            return;
-        }
-        
-        if (password.length < 6) {
-            alert('密码至少6位');
-            return;
-        }
-        
-        // 模拟注册
-        this.userData.isLoggedIn = true;
-        this.userData.name = phone;
-        this.saveUserData();
-        this.hideAuthModal();
-        this.updateUI();
-        alert('注册成功！');
     }
 
     handleLogout() {
-        if (confirm('确定要退出登录吗？')) {
-            this.userData.isLoggedIn = false;
-            this.userData.name = '';
-            this.saveUserData();
-            this.updateUI();
+        try {
+            if (confirm('确定要退出登录吗？')) {
+                this.userData.isLoggedIn = false;
+                this.userData.name = '';
+                this.saveUserData();
+                this.updateUI();
+            }
+        } catch (error) {
+            console.error('退出登录出错:', error);
         }
     }
 
     purchaseVip(plan) {
-        const prices = { month: 19, quarter: 49, year: 158 };
-        const durations = { month: 30, quarter: 90, year: 365 };
-        
-        if (confirm(`确定要购买${plan === 'month' ? '月度' : plan === 'quarter' ? '季度' : '年度'}会员吗？价格¥${prices[plan]}`)) {
-            this.userData.isVip = true;
-            const expireDate = new Date();
-            expireDate.setDate(expireDate.getDate() + durations[plan]);
-            this.userData.vipExpire = expireDate.toISOString();
-            this.saveUserData();
-            this.hideVipModal();
-            this.updateUI();
-            alert('VIP开通成功！');
+        try {
+            const prices = { month: 19, quarter: 49, year: 158 };
+            const durations = { month: 30, quarter: 90, year: 365 };
+            
+            const planName = plan === 'month' ? '月度' : plan === 'quarter' ? '季度' : '年度';
+            if (confirm(`确定要购买${planName}会员吗？价格¥${prices[plan]}`)) {
+                this.userData.isVip = true;
+                const expireDate = new Date();
+                expireDate.setDate(expireDate.getDate() + durations[plan]);
+                this.userData.vipExpire = expireDate.toISOString();
+                this.saveUserData();
+                this.hideVipModal();
+                this.updateUI();
+                this.showToast('VIP开通成功！');
+            }
+        } catch (error) {
+            console.error('购买VIP出错:', error);
+            this.showToast('购买出错，请重试');
         }
     }
 
