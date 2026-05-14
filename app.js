@@ -531,7 +531,28 @@ class FengShuiApp {
         });
 
         document.querySelectorAll('.feature-card').forEach(card => {
-            card.addEventListener('click', () => this.switchPage(card.dataset.page));
+            card.addEventListener('click', () => {
+                const page = card.dataset.page;
+                const isPremium = card.classList.contains('premium');
+                
+                if (isPremium) {
+                    // 检查是否登录
+                    if (!this.userData.isLoggedIn) {
+                        alert('请先登录后再使用此功能！');
+                        this.showAuthModal();
+                        return;
+                    }
+                    // 检查是否是VIP
+                    if (!this.userData.isVip) {
+                        alert('此功能需要开通VIP会员才能使用！');
+                        this.showVipModal();
+                        return;
+                    }
+                }
+                
+                // 权限通过，正常跳转
+                this.switchPage(page);
+            });
         });
 
         document.querySelector('.compass-wrapper').addEventListener('click', () => this.rotateCompass());
