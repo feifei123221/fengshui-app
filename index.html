@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>风水大师 - 专业风水应用 | 八字算命 | 罗盘 | 八宅风水</title>
+    <meta name="description" content="专业风水大师APP，提供八字算命、风水罗盘、八宅风水、家居风水、办公风水、黄历择吉、吉祥物推荐等功能，传承中国传统文化智慧。">
+    <meta name="keywords" content="风水,八字算命,罗盘,八宅风水,家居风水,办公风水,黄历,择吉,吉祥物,传统文化,易经,八卦">
+    <meta name="author" content="风水大师">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="风水大师 - 专业风水应用">
+    <meta property="og:description" content="专业风水大师APP，提供八字算命、风水罗盘、八宅风水等功能">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_CN">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Google Analytics (用户需要替换为自己的ID) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">☯</span>
+                <span class="logo-text">风水大师</span>
+            </div>
+            <nav class="nav">
+                <button class="nav-btn active" data-page="home">首页</button>
+                <button class="nav-btn" data-page="compass">罗盘</button>
+                <button class="nav-btn" data-page="bazi">八字</button>
+                <button class="nav-btn" data-page="bazhai">八宅</button>
+                <button class="nav-btn" data-page="shanshan">二十四山</button>
+                <button class="nav-btn" data-page="home-fengshui">家居风水</button>
+                <button class="nav-btn" data-page="office-fengshui">办公风水</button>
+                <button class="nav-btn" data-page="calendar">黄历</button>
+                <button class="nav-btn" data-page="mascots">吉祥物</button>
+                <button class="nav-btn" data-page="knowledge">知识库</button>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <section id="page-home" class="page active">
+                <div class="hero">
+                    <h1>风水大师</h1>
+                    <p class="subtitle">传承千年智慧，解读天地玄机</p>
+                </div>
+                <div class="feature-grid">
+                    <div class="feature-card" data-page="compass">
+                        <div class="feature-icon">🧭</div>
+                    </div>
+                    <div class="feature-card" data-page="bazi">
+                        <div class="feature-icon">📊</div>
+                    </div>
+                    <div class="feature-card" data-page="bazhai">
+                        <div class="feature-icon">🏛️</div>
+                    </div>
+                    <div class="feature-card" data-page="shanshan">
+                        <div class="feature-icon">⛰️</div>
+                    </div>
+                    <div class="feature-card" data-page="home-fengshui">
+                        <div class="feature-icon">🏠</div>
+                    </div>
+                    <div class="feature-card" data-page="office-fengshui">
+                        <div class="feature-icon">🏢</div>
+                    </div>
+                    <div class="feature-card" data-page="calendar">
+                        <div class="feature-icon">📅</div>
+                    </div>
+                    <div class="feature-card" data-page="mascots">
+                        <div class="feature-icon">🐉</div>
+                    </div>
+                    <div class="feature-card" data-page="knowledge">
+                        <div class="feature-icon">📚</div>
+                    </div>
+                </div>
+                <div class="daily-tips">
+                    <h3>今日风水宜忌</h3>
+                    <div id="daily-tips-content"></div>
+                </div>
+            </section>
+
+            <section id="page-compass" class="page">
+                <div class="compass-container">
+                    <h2>风水罗盘</h2>
+                    
+                    <div class="compass-tabs">
+                        <button class="tab-btn active" data-tab="compass-main">罗盘</button>
+                        <button class="tab-btn" data-tab="compass-guide">使用指南</button>
+                        <button class="tab-btn" data-tab="compass-scenes">场景应用</button>
+                    </div>
+                    
+                    <div id="compass-main" class="compass-tab-content">
+                        <div class="compass-wrapper">
+                            <div class="compass-ring"></div>
+                            <div class="compass-outer">
+                                <div class="compass-markers">
+                                    <span class="marker north">北</span>
+                                    <span class="marker east">东</span>
+                                    <span class="marker south">南</span>
+                                    <span class="marker west">西</span>
+                                </div>
+                            </div>
+                            <div class="compass-inner">
+                                <div class="compass-center">☯</div>
+                            </div>
+                            <div class="compass-needle">
+                                <div class="needle-red"></div>
+                                <div class="needle-white"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="compass-info">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">当前方位</span>
+                                    <span class="info-value" id="compass-direction">南方</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">角度</span>
+                                    <span class="info-value" id="compass-angle">0°</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">五行属性</span>
+                                    <span class="info-value" id="compass-element">火</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">卦象</span>
+                                    <span class="info-value" id="compass-gua">离</span>
+                                </div>
+                            </div>
+                            
+                            <div class="compass-interpretation" id="compass-interpretation">
+                                <h4>方位解读</h4>
+                                <p>南方属火，对应离卦，主光明、文明。此方位利于书房、客厅等采光好的区域。</p>
+                            </div>
+                            
+                            <div class="compass-controls">
+                                <button class="btn-secondary" id="rotate-left">← 逆时针</button>
+                                <button class="btn-secondary" id="reset-compass">重置</button>
+                                <button class="btn-secondary" id="rotate-right">顺时针 →</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="compass-guide" class="compass-tab-content hidden">
+                        <div class="guide-section">
+                            <h3>📖 罗盘基础使用</h3>
+                            <div class="guide-content">
+                                <h4>1. 如何持罗盘</h4>
+                                <p>将罗盘水平放置于手掌中，保持平稳，避免靠近金属物品干扰磁针。</p>
+                                
+                                <h4>2. 确定方位</h4>
+                                <p>等待磁针稳定后，红色指针指向北方，白色指针指向南方。转动罗盘使方位与实际环境对齐。</p>
+                                
+                                <h4>3. 寻找吉位</h4>
+                                <p>根据不同需求（求财、求健康、求事业），在相应方位布置风水物品。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="guide-section">
+                            <h3>🎯 八方详解</h3>
+                            <div class="directions-grid">
+                                <div class="direction-card">
+                                    <h4>北方 (坎卦)</h4>
+                                    <p>五行属水，主智慧、事业。利于放置饮水机、鱼缸。</p>
+                                </div>
+                                <div class="direction-card">
+                                    <h4>东北 (艮卦)</h4>
+                                    <p>五行属土，主靠山、贵人。宜保持整洁明亮。</p>
+                                </div>
+                                <div class="direction-card">
+                                    <h4>东方 (震卦)</h4>
+                                    <p>五行属木，主成长、健康。适合放置绿植。</p>
+                                </div>
+                                <div class="direction-card">
+                                    <h4>东南 (巽卦)</h4>
+                                    <p>五行属木，主文昌、财运。利于书房布置。</p>
+                                </div>
+                                <div class="direction-card">
+                                    <h4>南方 (离卦)</h4>
+                                    <p>五行属火，主名誉、光明。采光要好。</p>
+                                </div>
+                                <div class="direction-card">
+                                    <h4>西南 (坤卦)</h4>
+                                    <p>五行属土，主家庭、女主人。宜温馨和谐。</p>
+                                </div>
+                                <div class="direction-card">
+                                    <h4>西方 (兑卦)</h4>
+                                    <p>五行属金，主感情、口才。可放音乐设备。</p>
+                                </div>
+                                <div class="direction-card">
+                                    <h4>西北 (乾卦)</h4>
+                                    <p>五行属金，主权威、男主人。宜庄重整洁。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="compass-scenes" class="compass-tab-content hidden">
+                        <div class="scene-selector">
+                            <h3>选择应用场景</h3>
+                            <div class="scene-buttons">
+                                <button class="scene-btn active" data-scene="home">🏠 家居布局</button>
+                                <button class="scene-btn" data-scene="office">🏢 办公布置</button>
+                                <button class="scene-btn" data-scene="shop">🏪 商铺旺财</button>
+                                <button class="scene-btn" data-scene="study">📚 书房文昌</button>
+                                <button class="scene-btn" data-scene="bedroom">🛏️ 卧室桃花</button>
+                                <button class="scene-btn" data-scene="garden">🌳 庭院设计</button>
+                            </div>
+                        </div>
+                        
+                        <div id="scene-content" class="scene-content">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-bazi" class="page">
+                <div class="bazi-container">
+                    <h2>八字算命</h2>
+                    <form class="bazi-form">
+                        <div class="form-group">
+                            <label>姓名</label>
+                            <input type="text" id="bazi-name" placeholder="请输入姓名">
+                        </div>
+                        <div class="form-group">
+                            <label>性别</label>
+                            <select id="bazi-gender">
+                                <option value="male">男</option>
+                                <option value="female">女</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>出生日期</label>
+                            <input type="date" id="bazi-date">
+                        </div>
+                        <div class="form-group">
+                            <label>出生时间</label>
+                            <div class="shichen-selector" id="shichen-selector">
+                                <div class="shichen-item" data-value="23">
+                                    <span class="shichen-name">子时</span>
+                                    <span class="shichen-time">23:00-01:00</span>
+                                </div>
+                                <div class="shichen-item" data-value="01">
+                                    <span class="shichen-name">丑时</span>
+                                    <span class="shichen-time">01:00-03:00</span>
+                                </div>
+                                <div class="shichen-item" data-value="03">
+                                    <span class="shichen-name">寅时</span>
+                                    <span class="shichen-time">03:00-05:00</span>
+                                </div>
+                                <div class="shichen-item" data-value="05">
+                                    <span class="shichen-name">卯时</span>
+                                    <span class="shichen-time">05:00-07:00</span>
+                                </div>
+                                <div class="shichen-item" data-value="07">
+                                    <span class="shichen-name">辰时</span>
+                                    <span class="shichen-time">07:00-09:00</span>
+                                </div>
+                                <div class="shichen-item" data-value="09">
+                                    <span class="shichen-name">巳时</span>
+                                    <span class="shichen-time">09:00-11:00</span>
+                                </div>
+                                <div class="shichen-item" data-value="11">
+                                    <span class="shichen-name">午时</span>
+                                    <span class="shichen-time">11:00-13:00</span>
+                                </div>
+                                <div class="shichen-item" data-value="13">
+                                    <span class="shichen-name">未时</span>
+                                    <span class="shichen-time">13:00-15:00</span>
+                                </div>
+                                <div class="shichen-item" data-value="15">
+                                    <span class="shichen-name">申时</span>
+                                    <span class="shichen-time">15:00-17:00</span>
+                                </div>
+                                <div class="shichen-item" data-value="17">
+                                    <span class="shichen-name">酉时</span>
+                                    <span class="shichen-time">17:00-19:00</span>
+                                </div>
+                                <div class="shichen-item" data-value="19">
+                                    <span class="shichen-name">戌时</span>
+                                    <span class="shichen-time">19:00-21:00</span>
+                                </div>
+                                <div class="shichen-item" data-value="21">
+                                    <span class="shichen-name">亥时</span>
+                                    <span class="shichen-time">21:00-23:00</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="bazi-time" value="23">
+                        </div>
+                        <button type="button" class="btn-primary" id="calc-bazi">测算八字</button>
+                    </form>
+                    <div id="bazi-result"></div>
+                </div>
+            </section>
+
+            <section id="page-bazhai" class="page">
+                <div class="bazhai-container">
+                    <h2>八宅风水</h2>
+                    <form class="bazhai-form">
+                        <div class="form-group">
+                            <label>坐山朝向</label>
+                            <div class="bazhai-selector" id="bazhai-selector">
+                                <div class="bazhai-item" data-value="kan">
+                                    <span class="bazhai-icon">☵</span>
+                                    <span class="bazhai-name">坎宅</span>
+                                    <span class="bazhai-direction">坐北朝南</span>
+                                </div>
+                                <div class="bazhai-item" data-value="gen">
+                                    <span class="bazhai-icon">☶</span>
+                                    <span class="bazhai-name">艮宅</span>
+                                    <span class="bazhai-direction">坐东北朝西南</span>
+                                </div>
+                                <div class="bazhai-item" data-value="zhen">
+                                    <span class="bazhai-icon">☳</span>
+                                    <span class="bazhai-name">震宅</span>
+                                    <span class="bazhai-direction">坐东朝西</span>
+                                </div>
+                                <div class="bazhai-item" data-value="xun">
+                                    <span class="bazhai-icon">☴</span>
+                                    <span class="bazhai-name">巽宅</span>
+                                    <span class="bazhai-direction">坐东南朝西北</span>
+                                </div>
+                                <div class="bazhai-item" data-value="li">
+                                    <span class="bazhai-icon">☲</span>
+                                    <span class="bazhai-name">离宅</span>
+                                    <span class="bazhai-direction">坐南朝北</span>
+                                </div>
+                                <div class="bazhai-item" data-value="kun">
+                                    <span class="bazhai-icon">☷</span>
+                                    <span class="bazhai-name">坤宅</span>
+                                    <span class="bazhai-direction">坐西南朝东北</span>
+                                </div>
+                                <div class="bazhai-item" data-value="dui">
+                                    <span class="bazhai-icon">☱</span>
+                                    <span class="bazhai-name">兑宅</span>
+                                    <span class="bazhai-direction">坐西朝东</span>
+                                </div>
+                                <div class="bazhai-item" data-value="qian">
+                                    <span class="bazhai-icon">☰</span>
+                                    <span class="bazhai-name">乾宅</span>
+                                    <span class="bazhai-direction">坐西北朝东南</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="bazhai-direction" value="kan">
+                        </div>
+                        <button type="button" class="btn-primary" id="calc-bazhai">分析八宅</button>
+                    </form>
+                    <div id="bazhai-result"></div>
+                </div>
+            </section>
+
+            <section id="page-shanshan" class="page">
+                <div class="shanshan-container">
+                    <h2>二十四山向详解</h2>
+                    <div class="shanshan-intro">
+                        <p>二十四山向是罗盘的核心，将360度分为24个方位，每个方位15度，结合了天干、地支、八卦。</p>
+                    </div>
+                    <div id="shanshan-grid" class="shanshan-grid"></div>
+                    <div id="shanshan-detail" class="shanshan-detail"></div>
+                </div>
+            </section>
+
+            <section id="page-mascots" class="page">
+                <div class="mascots-container">
+                    <h2>风水吉祥物指南</h2>
+                    <div class="mascots-tabs">
+                        <button class="tab-btn active" data-tab="wealth">招财</button>
+                        <button class="tab-btn" data-tab="career">事业</button>
+                        <button class="tab-btn" data-tab="health">健康</button>
+                        <button class="tab-btn" data-tab="love">感情</button>
+                        <button class="tab-btn" data-tab="protection">化煞</button>
+                    </div>
+                    <div id="mascots-content" class="mascots-content"></div>
+                </div>
+            </section>
+
+            <section id="page-home-fengshui" class="page">
+                <div class="home-fengshui-container">
+                    <h2>家居风水</h2>
+                    <div class="fengshui-tabs">
+                        <button class="tab-btn active" data-tab="entrance">大门</button>
+                        <button class="tab-btn" data-tab="living-room">客厅</button>
+                        <button class="tab-btn" data-tab="bedroom">卧室</button>
+                        <button class="tab-btn" data-tab="kitchen">厨房</button>
+                        <button class="tab-btn" data-tab="toilet">卫生间</button>
+                    </div>
+                    <div id="home-fengshui-content"></div>
+                </div>
+            </section>
+
+            <section id="page-office-fengshui" class="page">
+                <div class="office-fengshui-container">
+                    <h2>办公风水</h2>
+                    <div class="fengshui-tabs">
+                        <button class="tab-btn active" data-tab="desk">办公桌</button>
+                        <button class="tab-btn" data-tab="layout">办公室布局</button>
+                        <button class="tab-btn" data-tab="decoration">装饰</button>
+                    </div>
+                    <div id="office-fengshui-content"></div>
+                </div>
+            </section>
+
+            <section id="page-calendar" class="page">
+                <div class="calendar-container">
+                    <h2>黄历择吉</h2>
+                    <div class="calendar-header">
+                        <button id="prev-month">&lt;</button>
+                        <span id="calendar-title"></span>
+                        <button id="next-month">&gt;</button>
+                    </div>
+                    <div id="calendar-grid"></div>
+                    <div id="calendar-detail"></div>
+                </div>
+            </section>
+
+            <section id="page-knowledge" class="page">
+                <div class="knowledge-container">
+                    <h2>风水知识库</h2>
+                    <div class="knowledge-list"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
