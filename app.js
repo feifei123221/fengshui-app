@@ -469,6 +469,17 @@ class FengShuiApp {
         this.currentPage = 'home';
         this.compassAngle = 0;
         this.currentMonth = new Date();
+        this.userData = {
+            isLoggedIn: false,
+            name: '',
+            isVip: false,
+            vipExpire: null,
+            stats: {
+                bazi: 0,
+                hehun: 0,
+                fortune: 0
+            }
+        };
         this.init();
     }
 
@@ -484,6 +495,10 @@ class FengShuiApp {
         this.renderShanshanGrid();
         this.renderMascotsContent('wealth');
         this.initSelectors();
+        this.initAuth();
+        this.initFortune();
+        this.initHehun();
+        this.initShop();
     }
 
     initSelectors() {
@@ -914,7 +929,441 @@ class FengShuiApp {
         `;
         document.getElementById('mascots-content').innerHTML = html;
     }
+
+    // 每日运势功能
+    initFortune() {
+        const today = new Date();
+        const dateStr = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+        const dateEl = document.getElementById('fortune-date');
+        if (dateEl) dateEl.textContent = dateStr;
+        
+        // 随机生成运势分数
+        const score = Math.floor(Math.random() * 40) + 60; // 60-99分
+        const scoreEl = document.getElementById('fortune-score');
+        if (scoreEl) scoreEl.textContent = score;
+        
+        const fortuneDesc = score >= 85 ? '今日运势大吉' : score >= 70 ? '今日运势平顺' : '今日运势一般';
+        const descEl = document.getElementById('fortune-desc');
+        if (descEl) descEl.textContent = fortuneDesc;
+        
+        // 动态设置五行分数条
+        const fillElements = document.querySelectorAll('.element-fill');
+        const scoreElements = document.querySelectorAll('.element-score');
+        fillElements.forEach((el, i) => {
+            const elemScore = Math.floor(Math.random() * 40) + 60;
+            el.style.width = `${elemScore}%`;
+            if (scoreElements[i]) scoreElements[i].textContent = `${elemScore}%`;
+        });
+        
+        // VIP解锁按钮
+        const unlockBtn = document.getElementById('fortune-unlock-btn');
+        if (unlockBtn) {
+            unlockBtn.addEventListener('click', () => {
+                this.showVipModal();
+            });
+        }
+    }
+
+    // 八字合婚功能
+    initHehun() {
+        document.getElementById('hehun-vip-btn').addEventListener('click', () => {
+            this.showVipModal();
+        });
+        
+        document.getElementById('calc-hehun').addEventListener('click', () => {
+            this.calculateHehun();
+        });
+    }
+
+    calculateHehun() {
+        const maleName = document.getElementById('hehun-name-male').value;
+        const femaleName = document.getElementById('hehun-name-female').value;
+        
+        if (!maleName || !femaleName) {
+            alert('请填写双方姓名');
+            return;
+        }
+        
+        // 随机生成合婚分数
+        const score = Math.floor(Math.random() * 40) + 60;
+        
+        const resultHtml = `
+            <div class="hehun-result">
+                <h3>八字合婚结果</h3>
+                <div class="hehun-score">
+                    <div class="score-circle">
+                        <span class="score-num">${score}</span>
+                        <span class="score-label">分</span>
+                    </div>
+                    <p class="score-text">${score >= 85 ? '天作之合' : score >= 70 ? '美满良缘' : '需要磨合'}</p>
+                </div>
+                <div class="hehun-detail">
+                    <h4>综合分析</h4>
+                    <p>${maleName}与${femaleName}的八字契合度${score >= 70 ? '较高' : '一般'}，${score >= 85 ? '是非常理想的姻缘' : '需要双方互相理解包容'}。</p>
+                    <h4>建议</h4>
+                    <p>在日常生活中要多沟通，互相体谅对方，共同经营好这段感情。</p>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('hehun-result').innerHTML = resultHtml;
+        
+        // 更新统计
+        if (this.userData.isLoggedIn) {
+            this.userData.stats.hehun++;
+            this.saveUserData();
+            this.updateProfileStats();
+        }
+    }
+
+    // 商城功能
+    initShop() {
+        this.renderShopGrid('all');
+        
+        // 分类标签
+        document.querySelectorAll('[data-shop-tab]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-shop-tab]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const tab = btn.dataset.shopTab;
+                this.renderShopGrid(tab);
+            });
+        });
+        
+        // 搜索功能
+        document.getElementById('shop-search').addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase();
+            this.filterShopItems(keyword);
+        });
+    }
+
+    renderShopGrid(category) {
+        const shopItems = this.getShopItems();
+        let filtered = category === 'all' ? shopItems : shopItems.filter(item => item.category === category);
+        
+        const html = filtered.map(item => `
+            <div class="shop-item">
+                <div class="shop-item-image">${item.icon}</div>
+                <div class="shop-item-info">
+                    <h4>${item.name}</h4>
+                    <p>${item.desc}</p>
+                    <div class="shop-item-price">
+                        <span class="price">¥${item.price}</span>
+                        <span class="shop-item-tag">${item.tag}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('shop-grid').innerHTML = html;
+    }
+
+    filterShopItems(keyword) {
+        const shopItems = this.getShopItems();
+        let filtered = shopItems.filter(item => 
+            item.name.toLowerCase().includes(keyword) || item.desc.toLowerCase().includes(keyword));
+        
+        const html = filtered.map(item => `
+            <div class="shop-item">
+                <div class="shop-item-image">${item.icon}</div>
+                <div class="shop-item-info">
+                    <h4>${item.name}</h4>
+                    <p>${item.desc}</p>
+                    <div class="shop-item-price">
+                        <span class="price">¥${item.price}</span>
+                        <span class="shop-item-tag">${item.tag}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('shop-grid').innerHTML = html;
+    }
+
+    getShopItems() {
+        return [
+            { icon: '🐲', name: '开光龙龟摆件', desc: '招财化煞，镇宅保平安', price: 298, tag: '热卖', category: 'wealth' },
+            { icon: '🦋', name: '粉水晶七星阵', desc: '旺桃花，助姻缘', price: 198, tag: '新品', category: 'love' },
+            { icon: '📚', name: '文昌塔', desc: '助学业事业，步步高升', price: 168, tag: '推荐', category: 'career' },
+            { icon: '🍑', name: '寿桃摆件', desc: '健康长寿，福寿双全', price: 258, tag: '精选', category: 'health' },
+            { icon: '💰', name: '五帝钱', desc: '化煞辟邪，旺财转运', price: 88, tag: '特惠', category: 'wealth' },
+            { icon: '🪷', name: '葫芦挂件', desc: '保健康，化病灾', price: 68, tag: '热销', category: 'health' },
+            { icon: '🐴', name: '马到成功', desc: '事业顺利，马到成功', price: 268, tag: '新品', category: 'career' },
+            { icon: '🦢', name: '鸳鸯戏水', desc: '夫妻和睦，百年好合', price: 228, tag: '推荐', category: 'love' }
+        ];
+    }
+
+    // 用户系统
+    initAuth() {
+        this.loadUserData();
+        
+        // 用户按钮
+        document.getElementById('user-btn').addEventListener('click', () => {
+            if (this.userData.isLoggedIn) {
+                this.navigateTo('profile');
+            } else {
+                this.showAuthModal();
+            }
+        });
+        
+        // VIP按钮
+        document.getElementById('vip-btn').addEventListener('click', () => {
+            this.showVipModal();
+        });
+        
+        // 首页VIP按钮
+        document.getElementById('home-vip-btn').addEventListener('click', () => {
+            this.showVipModal();
+        });
+        
+        // 登录/注册切换
+        document.querySelectorAll('.auth-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const type = btn.dataset.auth;
+                if (type === 'login') {
+                    document.getElementById('login-form').classList.remove('hidden');
+                    document.getElementById('register-form').classList.add('hidden');
+                } else {
+                    document.getElementById('login-form').classList.add('hidden');
+                    document.getElementById('register-form').classList.remove('hidden');
+                }
+            });
+        });
+        
+        document.querySelectorAll('.switch-auth').forEach(el => {
+            el.addEventListener('click', () => {
+                const isLogin = !document.getElementById('login-form').classList.contains('hidden');
+                if (isLogin) {
+                    document.querySelectorAll('.auth-tab')[0].classList.remove('active');
+                    document.querySelectorAll('.auth-tab')[1].classList.add('active');
+                    document.getElementById('login-form').classList.add('hidden');
+                    document.getElementById('register-form').classList.remove('hidden');
+                } else {
+                    document.querySelectorAll('.auth-tab')[0].classList.add('active');
+                    document.querySelectorAll('.auth-tab')[1].classList.remove('active');
+                    document.getElementById('login-form').classList.remove('hidden');
+                    document.getElementById('register-form').classList.add('hidden');
+                }
+            });
+        });
+        
+        // 登录按钮
+        document.getElementById('login-btn').addEventListener('click', () => {
+            this.handleLogin();
+        });
+        
+        // 注册按钮
+        document.getElementById('register-btn').addEventListener('click', () => {
+            this.handleRegister();
+        });
+        
+        // 关闭弹窗
+        document.getElementById('auth-close').addEventListener('click', () => {
+            this.hideAuthModal();
+        });
+        
+        document.getElementById('vip-close').addEventListener('click', () => {
+            this.hideVipModal();
+        });
+        
+        // 广告关闭
+        document.getElementById('ad-close').addEventListener('click', () => {
+            document.getElementById('banner-ad').style.display = 'none';
+        });
+        
+        // 个人中心按钮
+        document.getElementById('profile-login-btn').addEventListener('click', () => {
+            this.showAuthModal();
+        });
+        
+        // 退出登录
+        document.getElementById('menu-logout').addEventListener('click', () => {
+            this.handleLogout();
+        });
+        
+        // 会员菜单
+        document.getElementById('menu-vip').addEventListener('click', () => {
+            this.showVipModal();
+        });
+        
+        // 关闭弹窗点击外部
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+        
+        // 升级VIP按钮
+        document.querySelectorAll('.vip-plan .btn-vip').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const plan = e.target.closest('.vip-plan').dataset.plan;
+                this.purchaseVip(plan);
+            });
+        });
+        
+        this.updateUI();
+    }
+
+    showAuthModal() {
+        document.getElementById('auth-modal').classList.remove('hidden');
+    }
+
+    hideAuthModal() {
+        document.getElementById('auth-modal').classList.add('hidden');
+    }
+
+    showVipModal() {
+        document.getElementById('vip-modal').classList.remove('hidden');
+    }
+
+    hideVipModal() {
+        document.getElementById('vip-modal').classList.add('hidden');
+    }
+
+    handleLogin() {
+        const account = document.getElementById('login-account').value;
+        const password = document.getElementById('login-password').value;
+        
+        if (!account || !password) {
+            alert('请填写完整信息');
+            return;
+        }
+        
+        // 模拟登录
+        this.userData.isLoggedIn = true;
+        this.userData.name = account;
+        this.saveUserData();
+        this.hideAuthModal();
+        this.updateUI();
+        alert('登录成功！');
+    }
+
+    handleRegister() {
+        const phone = document.getElementById('register-phone').value;
+        const password = document.getElementById('register-password').value;
+        const confirm = document.getElementById('register-confirm').value;
+        
+        if (!phone || !password) {
+            alert('请填写完整信息');
+            return;
+        }
+        
+        if (password !== confirm) {
+            alert('两次密码不一致');
+            return;
+        }
+        
+        if (password.length < 6) {
+            alert('密码至少6位');
+            return;
+        }
+        
+        // 模拟注册
+        this.userData.isLoggedIn = true;
+        this.userData.name = phone;
+        this.saveUserData();
+        this.hideAuthModal();
+        this.updateUI();
+        alert('注册成功！');
+    }
+
+    handleLogout() {
+        if (confirm('确定要退出登录吗？')) {
+            this.userData.isLoggedIn = false;
+            this.userData.name = '';
+            this.saveUserData();
+            this.updateUI();
+        }
+    }
+
+    purchaseVip(plan) {
+        const prices = { month: 19, quarter: 49, year: 158 };
+        const durations = { month: 30, quarter: 90, year: 365 };
+        
+        if (confirm(`确定要购买${plan === 'month' ? '月度' : plan === 'quarter' ? '季度' : '年度'}会员吗？价格¥${prices[plan]}`)) {
+            this.userData.isVip = true;
+            const expireDate = new Date();
+            expireDate.setDate(expireDate.getDate() + durations[plan]);
+            this.userData.vipExpire = expireDate.toISOString();
+            this.saveUserData();
+            this.hideVipModal();
+            this.updateUI();
+            alert('VIP开通成功！');
+        }
+    }
+
+    updateUI() {
+        // 更新头部
+        if (this.userData.isLoggedIn) {
+            document.getElementById('user-avatar').textContent = '👤';
+        }
+        
+        // 更新个人中心
+        if (this.userData.isLoggedIn) {
+            document.getElementById('profile-name').textContent = this.userData.name;
+            document.getElementById('profile-status').textContent = this.userData.isVip ? 'VIP会员' : '普通用户';
+            document.getElementById('profile-login-btn').style.display = 'none';
+            document.getElementById('profile-menu').classList.remove('hidden');
+            document.getElementById('profile-stats').classList.remove('hidden');
+            
+            if (this.userData.isVip) {
+                document.getElementById('vip-status').classList.remove('hidden');
+                const expireDate = new Date(this.userData.vipExpire);
+                document.getElementById('vip-expire').textContent = `到期: ${expireDate.toLocaleDateString()}`;
+                
+                // VIP用户显示合婚内容
+                document.getElementById('hehun-premium').classList.add('hidden');
+                document.getElementById('hehun-content').classList.remove('hidden');
+                
+                // 隐藏VIP解锁提示
+                document.getElementById('fortune-unlock').classList.add('hidden');
+                document.getElementById('fortune-blur').style.webkitMaskImage = 'none';
+            }
+            
+            this.updateProfileStats();
+        } else {
+            document.getElementById('profile-name').textContent = '未登录';
+            document.getElementById('profile-status').textContent = '点击登录解锁更多功能';
+            document.getElementById('profile-login-btn').style.display = 'block';
+            document.getElementById('profile-menu').classList.add('hidden');
+            document.getElementById('profile-stats').classList.add('hidden');
+            document.getElementById('vip-status').classList.add('hidden');
+        }
+    }
+
+    updateProfileStats() {
+        document.getElementById('stat-bazi').textContent = this.userData.stats.bazi;
+        document.getElementById('stat-hehun').textContent = this.userData.stats.hehun;
+        document.getElementById('stat-fortune').textContent = this.userData.stats.fortune;
+    }
+
+    loadUserData() {
+        const saved = localStorage.getItem('fengshuiUser');
+        if (saved) {
+            this.userData = JSON.parse(saved);
+        }
+    }
+
+    saveUserData() {
+        localStorage.setItem('fengshuiUser', JSON.stringify(this.userData));
+    }
 }
+
+// 扩展原有功能，增加VIP检查
+const originalCalcBazi = FengShuiApp.prototype.calculateBazi;
+FengShuiApp.prototype.calculateBazi = function() {
+    originalCalcBazi.call(this);
+    
+    if (this.userData.isLoggedIn) {
+        this.userData.stats.bazi++;
+        this.saveUserData();
+        this.updateProfileStats();
+    }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     new FengShuiApp();

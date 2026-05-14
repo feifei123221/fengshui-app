@@ -35,63 +35,535 @@
 </head>
 <body>
     <div id="app">
+        <!-- 用户弹窗 -->
+        <div id="auth-modal" class="modal hidden">
+            <div class="modal-content">
+                <button class="modal-close" id="auth-close">&times;</button>
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-auth="login">登录</button>
+                    <button class="auth-tab" data-auth="register">注册</button>
+                </div>
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label>手机号/邮箱</label>
+                        <input type="text" id="login-account" placeholder="请输入手机号或邮箱">
+                    </div>
+                    <div class="form-group">
+                        <label>密码</label>
+                        <input type="password" id="login-password" placeholder="请输入密码">
+                    </div>
+                    <button type="button" class="btn-primary btn-block" id="login-btn">登录</button>
+                    <p class="auth-tip">还没有账号？<span class="switch-auth">立即注册</span></p>
+                </form>
+                <form id="register-form" class="auth-form hidden">
+                    <div class="form-group">
+                        <label>手机号</label>
+                        <input type="text" id="register-phone" placeholder="请输入手机号">
+                    </div>
+                    <div class="form-group">
+                        <label>邮箱（可选）</label>
+                        <input type="email" id="register-email" placeholder="请输入邮箱">
+                    </div>
+                    <div class="form-group">
+                        <label>密码</label>
+                        <input type="password" id="register-password" placeholder="请输入密码（至少6位）">
+                    </div>
+                    <div class="form-group">
+                        <label>确认密码</label>
+                        <input type="password" id="register-confirm" placeholder="请再次输入密码">
+                    </div>
+                    <button type="button" class="btn-primary btn-block" id="register-btn">注册</button>
+                    <p class="auth-tip">已有账号？<span class="switch-auth">立即登录</span></p>
+                </form>
+            </div>
+        </div>
+
+        <!-- VIP会员弹窗 -->
+        <div id="vip-modal" class="modal hidden">
+            <div class="modal-content vip-modal">
+                <button class="modal-close" id="vip-close">&times;</button>
+                <div class="vip-header">
+                    <div class="vip-icon">👑</div>
+                    <h2>升级VIP会员</h2>
+                    <p>解锁所有高级功能，尊享专属服务</p>
+                </div>
+                <div class="vip-plans">
+                    <div class="vip-plan recommended" data-plan="month">
+                        <div class="plan-badge">推荐</div>
+                        <h3>月度会员</h3>
+                        <div class="plan-price">
+                            <span class="price-symbol">¥</span>
+                            <span class="price-num">19</span>
+                            <span class="price-unit">/月</span>
+                        </div>
+                        <ul class="plan-features">
+                            <li>✓ 无限八字测算</li>
+                            <li>✓ 详细分析报告</li>
+                            <li>✓ 每日完整版运势</li>
+                            <li>✓ 八字合婚功能</li>
+                            <li>✓ 无广告体验</li>
+                        </ul>
+                        <button class="btn-vip">立即开通</button>
+                    </div>
+                    <div class="vip-plan" data-plan="quarter">
+                        <h3>季度会员</h3>
+                        <div class="plan-price">
+                            <span class="price-symbol">¥</span>
+                            <span class="price-num">49</span>
+                            <span class="price-unit">/季</span>
+                        </div>
+                        <div class="plan-save">立省8元</div>
+                        <ul class="plan-features">
+                            <li>✓ 无限八字测算</li>
+                            <li>✓ 详细分析报告</li>
+                            <li>✓ 每日完整版运势</li>
+                            <li>✓ 八字合婚功能</li>
+                            <li>✓ 无广告体验</li>
+                            <li>✓ 专属吉祥物推荐</li>
+                        </ul>
+                        <button class="btn-vip">立即开通</button>
+                    </div>
+                    <div class="vip-plan best-value" data-plan="year">
+                        <div class="plan-badge">超值</div>
+                        <h3>年度会员</h3>
+                        <div class="plan-price">
+                            <span class="price-symbol">¥</span>
+                            <span class="price-num">158</span>
+                            <span class="price-unit">/年</span>
+                        </div>
+                        <div class="plan-save">立省70元</div>
+                        <ul class="plan-features">
+                            <li>✓ 无限八字测算</li>
+                            <li>✓ 详细分析报告</li>
+                            <li>✓ 每日完整版运势</li>
+                            <li>✓ 八字合婚功能</li>
+                            <li>✓ 无广告体验</li>
+                            <li>✓ 专属吉祥物推荐</li>
+                            <li>✓ 优先客服支持</li>
+                            <li>✓ 新功能抢先体验</li>
+                        </ul>
+                        <button class="btn-vip">立即开通</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <header class="header">
-            <div class="logo">
-                <span class="logo-icon">☯</span>
-                <span class="logo-text">风水大师</span>
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon">☯</span>
+                    <span class="logo-text">风水大师</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-vip-small" id="vip-btn">
+                    <span class="vip-icon">👑</span>
+                    <span>开通VIP</span>
+                </button>
+                <button class="user-btn" id="user-btn">
+                    <span class="user-avatar" id="user-avatar">👤</span>
+                </button>
             </div>
             <nav class="nav">
                 <button class="nav-btn active" data-page="home">首页</button>
+                <button class="nav-btn" data-page="fortune">每日运势</button>
                 <button class="nav-btn" data-page="compass">罗盘</button>
                 <button class="nav-btn" data-page="bazi">八字</button>
+                <button class="nav-btn" data-page="hehun">八字合婚</button>
                 <button class="nav-btn" data-page="bazhai">八宅</button>
                 <button class="nav-btn" data-page="shanshan">二十四山</button>
                 <button class="nav-btn" data-page="home-fengshui">家居风水</button>
                 <button class="nav-btn" data-page="office-fengshui">办公风水</button>
                 <button class="nav-btn" data-page="calendar">黄历</button>
                 <button class="nav-btn" data-page="mascots">吉祥物</button>
+                <button class="nav-btn" data-page="shop">商城</button>
                 <button class="nav-btn" data-page="knowledge">知识库</button>
+                <button class="nav-btn" data-page="profile">我的</button>
             </nav>
         </header>
+
+        <!-- Banner广告 -->
+        <div id="banner-ad" class="banner-ad">
+            <div class="ad-content">
+                <span class="ad-label">广告</span>
+                <span class="ad-text">🎉 新用户首月VIP仅需9.9元！</span>
+                <button class="ad-close" id="ad-close">&times;</button>
+            </div>
+        </div>
 
         <main class="main-content">
             <section id="page-home" class="page active">
                 <div class="hero">
                     <h1>风水大师</h1>
                     <p class="subtitle">传承千年智慧，解读天地玄机</p>
+                    <div class="vip-banner" id="home-vip-banner">
+                        <div class="vip-banner-content">
+                            <span class="vip-icon">👑</span>
+                            <span>升级VIP解锁更多高级功能</span>
+                            <button class="btn-small" id="home-vip-btn">立即升级</button>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="feature-grid">
+                    <div class="feature-card premium" data-page="fortune">
+                        <div class="feature-icon">🌟</div>
+                        <div class="feature-name">每日运势</div>
+                        <div class="feature-tag">VIP</div>
+                    </div>
                     <div class="feature-card" data-page="compass">
                         <div class="feature-icon">🧭</div>
+                        <div class="feature-name">风水罗盘</div>
                     </div>
                     <div class="feature-card" data-page="bazi">
                         <div class="feature-icon">📊</div>
+                        <div class="feature-name">八字算命</div>
+                    </div>
+                    <div class="feature-card premium" data-page="hehun">
+                        <div class="feature-icon">💕</div>
+                        <div class="feature-name">八字合婚</div>
+                        <div class="feature-tag">VIP</div>
                     </div>
                     <div class="feature-card" data-page="bazhai">
                         <div class="feature-icon">🏛️</div>
+                        <div class="feature-name">八宅风水</div>
                     </div>
                     <div class="feature-card" data-page="shanshan">
                         <div class="feature-icon">⛰️</div>
+                        <div class="feature-name">二十四山</div>
                     </div>
                     <div class="feature-card" data-page="home-fengshui">
                         <div class="feature-icon">🏠</div>
+                        <div class="feature-name">家居风水</div>
                     </div>
                     <div class="feature-card" data-page="office-fengshui">
                         <div class="feature-icon">🏢</div>
+                        <div class="feature-name">办公风水</div>
                     </div>
                     <div class="feature-card" data-page="calendar">
                         <div class="feature-icon">📅</div>
+                        <div class="feature-name">黄历择吉</div>
                     </div>
                     <div class="feature-card" data-page="mascots">
                         <div class="feature-icon">🐉</div>
+                        <div class="feature-name">吉祥物</div>
+                    </div>
+                    <div class="feature-card" data-page="shop">
+                        <div class="feature-icon">🛒</div>
+                        <div class="feature-name">风水商城</div>
                     </div>
                     <div class="feature-card" data-page="knowledge">
                         <div class="feature-icon">📚</div>
+                        <div class="feature-name">知识库</div>
                     </div>
                 </div>
+                
                 <div class="daily-tips">
                     <h3>今日风水宜忌</h3>
                     <div id="daily-tips-content"></div>
+                </div>
+                
+                <!-- 横幅广告位 -->
+                <div class="ad-section">
+                    <div class="ad-container">
+                        <span class="ad-label">广告</span>
+                        <div class="ad-content">
+                            <div class="ad-image">🎁</div>
+                            <div class="ad-info">
+                                <h4>开光吉祥物限时促销</h4>
+                                <p>大师开光，招财转运，正品保障</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 每日运势页面 -->
+            <section id="page-fortune" class="page">
+                <div class="fortune-container">
+                    <h2>每日运势</h2>
+                    
+                    <div class="fortune-date">
+                        <span id="fortune-date"></span>
+                    </div>
+                    
+                    <div class="fortune-summary" id="fortune-summary">
+                        <div class="fortune-score">
+                            <div class="score-circle">
+                                <span class="score-num" id="fortune-score">85</span>
+                                <span class="score-label">分</span>
+                            </div>
+                            <div class="score-text" id="fortune-desc">今日运势大吉</div>
+                        </div>
+                        
+                        <div class="fortune-elements">
+                            <div class="element-item">
+                                <span class="element-label">财运</span>
+                                <div class="element-bar">
+                                    <div class="element-fill" data-score="75"></div>
+                                </div>
+                                <span class="element-score">75%</span>
+                            </div>
+                            <div class="element-item">
+                                <span class="element-label">事业</span>
+                                <div class="element-bar">
+                                    <div class="element-fill" data-score="80"></div>
+                                </div>
+                                <span class="element-score">80%</span>
+                            </div>
+                            <div class="element-item">
+                                <span class="element-label">感情</span>
+                                <div class="element-bar">
+                                    <div class="element-fill" data-score="90"></div>
+                                </div>
+                                <span class="element-score">90%</span>
+                            </div>
+                            <div class="element-item">
+                                <span class="element-label">健康</span>
+                                <div class="element-bar">
+                                    <div class="element-fill" data-score="85"></div>
+                                </div>
+                                <span class="element-score">85%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="fortune-detail" id="fortune-detail">
+                        <div class="detail-section">
+                            <h3>📝 运势详解</h3>
+                            <div class="detail-blur" id="fortune-blur">
+                                <p>今日整体运势良好，财运方面有不错的机遇，事业上可能会有贵人相助。感情方面进展顺利，单身者有机会遇到心仪对象。健康状况良好，注意保持规律作息。</p>
+                                <h4>宜：</h4>
+                                <p>求财、签约、出行、嫁娶</p>
+                                <h4>忌：</h4>
+                                <p>动土、安葬、诉讼</p>
+                                <h4>幸运色：</h4>
+                                <p>红色、金色</p>
+                                <h4>幸运数字：</h4>
+                                <p>3、8</p>
+                                <h4>幸运方位：</h4>
+                                <p>南方</p>
+                            </div>
+                            <div class="unlock-vip" id="fortune-unlock">
+                                <div class="unlock-icon">🔒</div>
+                                <p>查看完整运势详解</p>
+                                <button class="btn-vip-small" id="fortune-unlock-btn">升级VIP解锁</button>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h3>🎋 今日宜忌</h3>
+                            <div class="yi-ji-grid">
+                                <div class="yi-ji-item yi">
+                                    <div class="yi-ji-title">宜</div>
+                                    <ul>
+                                        <li>祭祀</li>
+                                        <li>祈福</li>
+                                        <li>求嗣</li>
+                                        <li>开光</li>
+                                        <li>出行</li>
+                                        <li>嫁娶</li>
+                                    </ul>
+                                </div>
+                                <div class="yi-ji-item ji">
+                                    <div class="yi-ji-title">忌</div>
+                                    <ul>
+                                        <li>动土</li>
+                                        <li>破土</li>
+                                        <li>安葬</li>
+                                        <li>开仓</li>
+                                        <li>出货财</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h3>🎁 开运吉祥物</h3>
+                            <div class="mascot-recommend">
+                                <div class="mascot-card">
+                                    <div class="mascot-image">🐉</div>
+                                    <div class="mascot-info">
+                                        <h4>龙龟摆件</h4>
+                                        <p>招财化煞，镇宅保平安</p>
+                                        <div class="mascot-price">
+                                            <span class="price">¥298</span>
+                                            <button class="btn-small">查看详情</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 八字合婚页面 -->
+            <section id="page-hehun" class="page">
+                <div class="hehun-container">
+                    <h2>八字合婚</h2>
+                    <div class="hehun-premium" id="hehun-premium">
+                        <div class="premium-icon">🔒</div>
+                        <h3>VIP专属功能</h3>
+                        <p>八字合婚是VIP会员专属功能，升级VIP即可解锁</p>
+                        <button class="btn-vip" id="hehun-vip-btn">立即升级VIP</button>
+                    </div>
+                    <div class="hehun-content hidden" id="hehun-content">
+                        <form class="hehun-form">
+                            <div class="hehun-person">
+                                <h3>男方信息</h3>
+                                <div class="form-group">
+                                    <label>姓名</label>
+                                    <input type="text" id="hehun-name-male" placeholder="请输入姓名">
+                                </div>
+                                <div class="form-group">
+                                    <label>出生日期</label>
+                                    <input type="date" id="hehun-date-male">
+                                </div>
+                                <div class="form-group">
+                                    <label>出生时间</label>
+                                    <select id="hehun-time-male">
+                                        <option value="23">子时 (23:00-01:00)</option>
+                                        <option value="01">丑时 (01:00-03:00)</option>
+                                        <option value="03">寅时 (03:00-05:00)</option>
+                                        <option value="05">卯时 (05:00-07:00)</option>
+                                        <option value="07">辰时 (07:00-09:00)</option>
+                                        <option value="09">巳时 (09:00-11:00)</option>
+                                        <option value="11">午时 (11:00-13:00)</option>
+                                        <option value="13">未时 (13:00-15:00)</option>
+                                        <option value="15">申时 (15:00-17:00)</option>
+                                        <option value="17">酉时 (17:00-19:00)</option>
+                                        <option value="19">戌时 (19:00-21:00)</option>
+                                        <option value="21">亥时 (21:00-23:00)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hehun-person">
+                                <h3>女方信息</h3>
+                                <div class="form-group">
+                                    <label>姓名</label>
+                                    <input type="text" id="hehun-name-female" placeholder="请输入姓名">
+                                </div>
+                                <div class="form-group">
+                                    <label>出生日期</label>
+                                    <input type="date" id="hehun-date-female">
+                                </div>
+                                <div class="form-group">
+                                    <label>出生时间</label>
+                                    <select id="hehun-time-female">
+                                        <option value="23">子时 (23:00-01:00)</option>
+                                        <option value="01">丑时 (01:00-03:00)</option>
+                                        <option value="03">寅时 (03:00-05:00)</option>
+                                        <option value="05">卯时 (05:00-07:00)</option>
+                                        <option value="07">辰时 (07:00-09:00)</option>
+                                        <option value="09">巳时 (09:00-11:00)</option>
+                                        <option value="11">午时 (11:00-13:00)</option>
+                                        <option value="13">未时 (13:00-15:00)</option>
+                                        <option value="15">申时 (15:00-17:00)</option>
+                                        <option value="17">酉时 (17:00-19:00)</option>
+                                        <option value="19">戌时 (19:00-21:00)</option>
+                                        <option value="21">亥时 (21:00-23:00)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-primary btn-block" id="calc-hehun">开始合婚</button>
+                        </form>
+                        <div id="hehun-result"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 商城页面 -->
+            <section id="page-shop" class="page">
+                <div class="shop-container">
+                    <h2>风水商城</h2>
+                    
+                    <div class="shop-tabs">
+                        <button class="tab-btn active" data-shop-tab="all">全部</button>
+                        <button class="tab-btn" data-shop-tab="wealth">招财</button>
+                        <button class="tab-btn" data-shop-tab="career">事业</button>
+                        <button class="tab-btn" data-shop-tab="love">感情</button>
+                        <button class="tab-btn" data-shop-tab="health">健康</button>
+                    </div>
+                    
+                    <div class="shop-search">
+                        <input type="text" id="shop-search" placeholder="搜索吉祥物...">
+                    </div>
+                    
+                    <div class="shop-grid" id="shop-grid">
+                    </div>
+                </div>
+            </section>
+
+            <!-- 个人中心页面 -->
+            <section id="page-profile" class="page">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="profile-avatar">👤</div>
+                        <div class="profile-info">
+                            <h3 id="profile-name">未登录</h3>
+                            <p id="profile-status">点击登录解锁更多功能</p>
+                            <div class="vip-status hidden" id="vip-status">
+                                <span class="vip-tag">👑 VIP会员</span>
+                                <span class="vip-expire" id="vip-expire"></span>
+                            </div>
+                        </div>
+                        <button class="btn-primary" id="profile-login-btn">登录 / 注册</button>
+                    </div>
+                    
+                    <div class="profile-menu hidden" id="profile-menu">
+                        <div class="menu-item" id="menu-vip">
+                            <span class="menu-icon">👑</span>
+                            <span>我的会员</span>
+                            <span class="menu-arrow">></span>
+                        </div>
+                        <div class="menu-item" id="menu-history">
+                            <span class="menu-icon">📋</span>
+                            <span>测算历史</span>
+                            <span class="menu-arrow">></span>
+                        </div>
+                        <div class="menu-item" id="menu-favorites">
+                            <span class="menu-icon">❤️</span>
+                            <span>我的收藏</span>
+                            <span class="menu-arrow">></span>
+                        </div>
+                        <div class="menu-item" id="menu-orders">
+                            <span class="menu-icon">🛒</span>
+                            <span>我的订单</span>
+                            <span class="menu-arrow">></span>
+                        </div>
+                        <div class="menu-divider"></div>
+                        <div class="menu-item" id="menu-settings">
+                            <span class="menu-icon">⚙️</span>
+                            <span>设置</span>
+                            <span class="menu-arrow">></span>
+                        </div>
+                        <div class="menu-item" id="menu-help">
+                            <span class="menu-icon">❓</span>
+                            <span>帮助与反馈</span>
+                            <span class="menu-arrow">></span>
+                        </div>
+                        <div class="menu-divider"></div>
+                        <div class="menu-item menu-logout" id="menu-logout">
+                            <span class="menu-icon">🚪</span>
+                            <span>退出登录</span>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-stats hidden" id="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-num" id="stat-bazi">0</div>
+                            <div class="stat-label">八字测算</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-num" id="stat-hehun">0</div>
+                            <div class="stat-label">八字合婚</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-num" id="stat-fortune">0</div>
+                            <div class="stat-label">查看运势</div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -437,6 +909,20 @@
                 </div>
             </section>
         </main>
+        
+        <!-- 底部广告 -->
+        <div class="bottom-ad">
+            <div class="ad-container">
+                <span class="ad-label">广告</span>
+                <div class="ad-content">
+                    <div class="ad-image">✨</div>
+                    <div class="ad-info">
+                        <h4>大师在线咨询</h4>
+                        <p>一对一专业风水指导</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
