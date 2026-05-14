@@ -526,7 +526,7 @@ class FengShuiApp {
     }
 
     bindEvents() {
-        document.querySelectorAll('.nav-btn').forEach(btn => {
+        document.querySelectorAll('.nav-btn, .nav-item').forEach(btn => {
             btn.addEventListener('click', () => this.switchPage(btn.dataset.page));
         });
 
@@ -594,10 +594,11 @@ class FengShuiApp {
 
     switchPage(page) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.nav-btn, .nav-item').forEach(btn => btn.classList.remove('active'));
         
         document.getElementById(`page-${page}`).classList.add('active');
-        document.querySelector(`.nav-btn[data-page="${page}"]`).classList.add('active');
+        document.querySelector(`.nav-btn[data-page="${page}"]`)?.classList.add('active');
+        document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add('active');
         this.currentPage = page;
     }
 

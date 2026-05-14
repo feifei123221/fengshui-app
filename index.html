@@ -148,39 +148,7 @@
             </div>
         </div>
 
-        <header class="header">
-            <div class="header-left">
-                <div class="logo">
-                    <span class="logo-icon">☯</span>
-                    <span class="logo-text">风水大师</span>
-                </div>
-            </div>
-            <div class="header-right">
-                <button class="btn-vip-small" id="vip-btn">
-                    <span class="vip-icon">👑</span>
-                    <span>开通VIP</span>
-                </button>
-                <button class="user-btn" id="user-btn">
-                    <span class="user-avatar" id="user-avatar">👤</span>
-                </button>
-            </div>
-            <nav class="nav">
-                <button class="nav-btn active" data-page="home">首页</button>
-                <button class="nav-btn" data-page="fortune">每日运势</button>
-                <button class="nav-btn" data-page="compass">罗盘</button>
-                <button class="nav-btn" data-page="bazi">八字</button>
-                <button class="nav-btn" data-page="hehun">八字合婚</button>
-                <button class="nav-btn" data-page="bazhai">八宅</button>
-                <button class="nav-btn" data-page="shanshan">二十四山</button>
-                <button class="nav-btn" data-page="home-fengshui">家居风水</button>
-                <button class="nav-btn" data-page="office-fengshui">办公风水</button>
-                <button class="nav-btn" data-page="calendar">黄历</button>
-                <button class="nav-btn" data-page="mascots">吉祥物</button>
-                <button class="nav-btn" data-page="shop">商城</button>
-                <button class="nav-btn" data-page="knowledge">知识库</button>
-                <button class="nav-btn" data-page="profile">我的</button>
-            </nav>
-        </header>
+
 
         <!-- Banner广告 -->
         <div id="banner-ad" class="banner-ad">
@@ -194,7 +162,19 @@
         <main class="main-content">
             <section id="page-home" class="page active">
                 <div class="hero">
-                    <h1>风水大师</h1>
+                    <div class="hero-header">
+                        <button class="user-btn" id="user-btn">
+                            <span class="user-avatar" id="user-avatar">👤</span>
+                        </button>
+                        <div class="hero-logo">
+                            <span class="logo-icon">☯</span>
+                            <h1>风水大师</h1>
+                        </div>
+                        <button class="btn-vip-small" id="vip-btn">
+                            <span class="vip-icon">👑</span>
+                            <span>开通VIP</span>
+                        </button>
+                    </div>
                     <p class="subtitle">传承千年智慧，解读天地玄机</p>
                     <div class="vip-banner" id="home-vip-banner">
                         <div class="vip-banner-content">
@@ -910,6 +890,25 @@
             </section>
         </main>
         
+        <!-- 底部导航栏 -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-page="home">
+                <span class="nav-icon">🏠</span>
+            </button>
+            <button class="nav-item" data-page="fortune">
+                <span class="nav-icon">🌟</span>
+            </button>
+            <button class="nav-item" data-page="compass">
+                <span class="nav-icon">🧭</span>
+            </button>
+            <button class="nav-item" data-page="bazi">
+                <span class="nav-icon">📅</span>
+            </button>
+            <button class="nav-item" data-page="profile">
+                <span class="nav-icon">👤</span>
+            </button>
+        </nav>
+
         <!-- 底部广告 -->
         <div class="bottom-ad">
             <div class="ad-container">
