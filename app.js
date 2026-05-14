@@ -483,6 +483,15 @@ class FengShuiApp {
         this.init();
     }
 
+    // 安全辅助工具函数
+    safeQueryAll(selector) {
+        try {
+            return document.querySelectorAll(selector);
+        } catch (e) {
+            return [];
+        }
+    }
+
     init() {
         try {
             // 安全执行初始化的辅助函数
@@ -519,14 +528,6 @@ class FengShuiApp {
     initSelectors() {
         try {
             // 安全查询选择器
-            const safeQueryAll = (selector) => {
-                try {
-                    return document.querySelectorAll(selector);
-                } catch (e) {
-                    return [];
-                }
-            };
-            
             const safeQueryOne = (selector) => {
                 try {
                     return document.querySelector(selector);
@@ -536,7 +537,7 @@ class FengShuiApp {
             };
             
             // 初始化十二时辰选择器
-            const shichenItems = safeQueryAll('.shichen-item');
+            const shichenItems = this.safeQueryAll('.shichen-item');
             shichenItems.forEach(item => {
                 item.addEventListener('click', () => {
                     try {
@@ -553,7 +554,7 @@ class FengShuiApp {
             if (shichenItems[0]) shichenItems[0].classList.add('active');
 
             // 初始化八宅选择器
-            const bazhaiItems = safeQueryAll('.bazhai-item');
+            const bazhaiItems = this.safeQueryAll('.bazhai-item');
             bazhaiItems.forEach(item => {
                 item.addEventListener('click', () => {
                     try {
@@ -572,25 +573,16 @@ class FengShuiApp {
             console.error('初始化选择器出错:', error);
         }
     }
-
+    
     bindEvents() {
         try {
-            // 安全辅助函数
-            const safeQueryAll = (selector) => {
-                try {
-                    return document.querySelectorAll(selector);
-                } catch (e) {
-                    return [];
-                }
-            };
-            
             const safeBindById = (id, handler) => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('click', handler);
             };
             
             const safeBindByQuery = (selector, handler) => {
-                safeQueryAll(selector).forEach(el => {
+                this.safeQueryAll(selector).forEach(el => {
                     el.addEventListener('click', handler);
                 });
             };
@@ -606,7 +598,7 @@ class FengShuiApp {
             });
 
             // 功能卡片（已优化）
-            safeQueryAll('.feature-card').forEach(card => {
+            this.safeQueryAll('.feature-card').forEach(card => {
                 card.addEventListener('click', () => {
                     try {
                         const page = card.dataset.page;
@@ -645,12 +637,12 @@ class FengShuiApp {
             safeBindById('calc-bazhai', () => this.calculateBazhai());
 
             // 罗盘标签页
-            safeQueryAll('.compass-tabs .tab-btn').forEach(btn => {
+            this.safeQueryAll('.compass-tabs .tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     try {
-                        safeQueryAll('.compass-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                        this.safeQueryAll('.compass-tabs .tab-btn').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
-                        safeQueryAll('.compass-tab-content').forEach(c => c.classList.add('hidden'));
+                        this.safeQueryAll('.compass-tab-content').forEach(c => c.classList.add('hidden'));
                         const tabId = btn.dataset.tab;
                         const tabContent = document.getElementById(tabId);
                         if (tabContent) tabContent.classList.remove('hidden');
@@ -661,10 +653,10 @@ class FengShuiApp {
             });
 
             // 风水标签页
-            safeQueryAll('.fengshui-tabs .tab-btn').forEach(btn => {
+            this.safeQueryAll('.fengshui-tabs .tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     try {
-                        safeQueryAll('.fengshui-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                        this.safeQueryAll('.fengshui-tabs .tab-btn').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
                         const container = btn.closest('.home-fengshui-container, .office-fengshui-container');
                         if (container?.classList.contains('home-fengshui-container')) {
@@ -679,10 +671,10 @@ class FengShuiApp {
             });
 
             // 吉祥物标签页
-            safeQueryAll('.mascots-tabs .tab-btn').forEach(btn => {
+            this.safeQueryAll('.mascots-tabs .tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     try {
-                        safeQueryAll('.mascots-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                        this.safeQueryAll('.mascots-tabs .tab-btn').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
                         this.renderMascotsContent(btn.dataset.tab);
                     } catch (err) {
@@ -692,10 +684,10 @@ class FengShuiApp {
             });
 
             // 场景按钮
-            safeQueryAll('.scene-btn').forEach(btn => {
+            this.safeQueryAll('.scene-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     try {
-                        safeQueryAll('.scene-btn').forEach(b => b.classList.remove('active'));
+                        this.safeQueryAll('.scene-btn').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
                         this.renderSceneContent(btn.dataset.scene);
                     } catch (err) {
@@ -724,13 +716,55 @@ class FengShuiApp {
             });
             
             // 大师咨询按钮
-            safeQueryAll('.consult-btn, #submit-consult').forEach(btn => {
+            this.safeQueryAll('.consult-btn, #submit-consult').forEach(btn => {
                 btn.addEventListener('click', () => {
                     this.showToast('感谢您的咨询！我们会尽快与您联系！');
                 });
             });
+            
+            // 商家入驻表单
+            const merchantForm = document.getElementById('merchantForm');
+            if (merchantForm) {
+                merchantForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleMerchantSubmit();
+                });
+            }
+            
+            // 商家分类点击
+            this.safeQueryAll('.category-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    this.handleCategoryClick(item);
+                });
+            });
         } catch (globalError) {
             console.error('绑定事件全局出错:', globalError);
+        }
+    }
+    
+    // 处理商家分类点击
+    handleCategoryClick(item) {
+        try {
+            safeQueryAll('.category-item').forEach(i => {
+                i.style.border = 'none';
+                i.style.background = 'rgba(255, 255, 255, 0.05)';
+            });
+            item.style.border = '2px solid #ffd700';
+            item.style.background = 'rgba(255, 215, 0, 0.1)';
+            this.showToast('已选择' + item.children[1].textContent + '！');
+        } catch (error) {
+            console.error('处理分类点击出错:', error);
+        }
+    }
+    
+    // 处理商家入驻申请
+    handleMerchantSubmit() {
+        try {
+            this.showToast('入驻申请已提交！我们会在3个工作日内联系您！');
+            document.getElementById('merchantForm')?.reset();
+        } catch (error) {
+            console.error('提交入驻申请出错:', error);
+            this.showToast('提交失败，请稍后重试');
         }
     }
 
