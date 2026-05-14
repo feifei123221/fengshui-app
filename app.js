@@ -590,6 +590,13 @@ class FengShuiApp {
             this.currentMonth.setMonth(this.currentMonth.getMonth() + 1);
             this.renderCalendar();
         });
+
+        // 大师咨询按钮
+        document.querySelectorAll('.consult-btn, #submit-consult').forEach(btn => {
+            btn.addEventListener('click', () => {
+                alert('感谢您的咨询！我们会尽快与您联系！');
+            });
+        });
     }
 
     switchPage(page) {

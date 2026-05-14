@@ -107,7 +107,7 @@ body {
     background: rgba(255,255,255,0.05);
     border-radius: 15px;
     padding: 30px;
-    padding-bottom: 120px;
+    padding-bottom: 200px;
     backdrop-filter: blur(10px);
 }
 
@@ -1993,6 +1993,86 @@ select option:checked {
     font-size: 28px;
 }
 
+/* 大师咨询页面 */
+.consult-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffd700;
+}
+
+.consult-intro {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #b0b0b0;
+    font-size: 16px;
+}
+
+.consult-masters {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.master-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.master-avatar {
+    font-size: 50px;
+    min-width: 60px;
+    text-align: center;
+}
+
+.master-info {
+    flex: 1;
+}
+
+.master-info h4 {
+    color: #ffd700;
+    margin-bottom: 5px;
+}
+
+.master-info p {
+    color: #b0b0b0;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.consult-form {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.consult-form h3 {
+    color: #ffd700;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.form-input, .form-textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.form-input::placeholder, .form-textarea::placeholder {
+    color: #808080;
+}
+
 /* 手机屏幕适配 */
 @media (max-width: 768px) {
     html, body {
@@ -2027,7 +2107,7 @@ select option:checked {
     
     .main-content {
         padding: 15px;
-        padding-bottom: 100px;
+        padding-bottom: 150px;
         border-radius: 0;
         min-height: calc(100vh - 120px);
     }
