@@ -652,20 +652,7 @@ class FengShuiApp {
                 });
             });
 
-            // 罗盘传感器初始化（页面加载时）
-            const compassPage = document.getElementById('compass');
-            if (compassPage) {
-                // 监听页面切换到罗盘时初始化传感器
-                const originalSwitchPage = this.switchPage.bind(this);
-                this.switchPage = (page) => {
-                    originalSwitchPage(page);
-                    if (page === 'compass') {
-                        this.startCompassSensor();
-                    } else {
-                        this.stopCompassSensor();
-                    }
-                };
-            }
+            // 罗盘初始化逻辑已集成到 switchPage 函数中
 
             // 测算按钮
             safeBindById('calc-bazi', () => this.calculateBazi());
@@ -828,6 +815,13 @@ class FengShuiApp {
             if (navItem) navItem.classList.add('active');
             
             this.currentPage = page;
+            
+            // 处理罗盘初始化
+            if (page === 'compass') {
+                this.startCompassSensor();
+            } else {
+                this.stopCompassSensor();
+            }
         } catch (error) {
             console.error('页面切换出错:', error);
         }
@@ -891,17 +885,28 @@ class FengShuiApp {
             const statusIndicator = document.getElementById('status-indicator');
             const statusText = document.getElementById('status-text');
             
-            // 更新状态显示
-            if (statusIndicator) statusIndicator.classList.add('active');
-            if (statusText) statusText.textContent = '罗盘已激活，请移动手机';
-
+            // 首先检测是否是手机设备
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // 如果不是手机设备，直接使用备用触摸模式
+            if (!isMobile) {
+                this.fallbackCompass();
+                return;
+            }
+            
+            // 首先尝试设备方向传感器（只在手机上）
+            let sensorAvailable = false;
+            
             // 检查设备方向传感器支持
             if ('DeviceOrientationEvent' in window && 
                 typeof DeviceOrientationEvent.requestPermission === 'function') {
                 // iOS 13+ 需要用户授权
+                sensorAvailable = true;
                 DeviceOrientationEvent.requestPermission()
                     .then(response => {
                         if (response === 'granted') {
+                            if (statusIndicator) statusIndicator.classList.add('active');
+                            if (statusText) statusText.textContent = '罗盘已激活，请移动手机';
                             this.compassActive = true;
                             window.addEventListener('deviceorientation', this.handleDeviceOrientation.bind(this));
                         } else {
@@ -915,6 +920,9 @@ class FengShuiApp {
                     });
             } else if ('DeviceOrientationEvent' in window) {
                 // 其他支持设备方向的设备
+                sensorAvailable = true;
+                if (statusIndicator) statusIndicator.classList.add('active');
+                if (statusText) statusText.textContent = '罗盘已激活，请移动手机';
                 this.compassActive = true;
                 window.addEventListener('deviceorientation', this.handleDeviceOrientation.bind(this));
                 // 设置超时检查传感器是否正常工作
@@ -923,10 +931,9 @@ class FengShuiApp {
                         this.stopCompassSensor();
                         this.fallbackCompass();
                     }
-                }, 3000);
+                }, 2000);
             } else {
                 // 不支持设备方向传感器
-                this.showToast('您的设备不支持方向传感器');
                 this.fallbackCompass();
             }
         } catch (error) {
