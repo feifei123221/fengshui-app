@@ -917,6 +917,13 @@ class FengShuiApp {
                 // 其他支持设备方向的设备
                 this.compassActive = true;
                 window.addEventListener('deviceorientation', this.handleDeviceOrientation.bind(this));
+                // 设置超时检查传感器是否正常工作
+                setTimeout(() => {
+                    if (this.compassAngle === 0 && this.compassActive) {
+                        this.stopCompassSensor();
+                        this.fallbackCompass();
+                    }
+                }, 3000);
             } else {
                 // 不支持设备方向传感器
                 this.showToast('您的设备不支持方向传感器');
@@ -951,14 +958,17 @@ class FengShuiApp {
         try {
             let heading = 0;
             
-            // 使用 alpha (指南针方向) 或 webkitCompassHeading
-            if (event.webkitCompassHeading !== undefined) {
+            // 检查传感器数据是否有效
+            if (event.webkitCompassHeading !== undefined && event.webkitCompassHeading !== null && !isNaN(event.webkitCompassHeading)) {
                 // iOS 设备
                 heading = event.webkitCompassHeading;
-            } else if (event.alpha !== undefined) {
-                // 其他设备
+            } else if (event.alpha !== undefined && event.alpha !== null && !isNaN(event.alpha) && event.alpha !== 0) {
+                // 其他设备（排除初始值0）
                 heading = 360 - event.alpha;
             } else {
+                // 无效数据，切换到备用模式
+                this.stopCompassSensor();
+                this.fallbackCompass();
                 return;
             }
             
