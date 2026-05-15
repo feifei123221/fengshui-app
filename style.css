@@ -235,37 +235,67 @@ body {
 
 .compass-needle {
     position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 15;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.needle-base {
+    position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 4px;
-    height: 160px;
-    z-index: 10;
-    transition: transform 0.3s ease;
+    width: 24px;
+    height: 24px;
+    background: radial-gradient(circle, #8b7355 0%, #5d4e37 100%);
+    border-radius: 50%;
+    border: 3px solid #3d2e1f;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.4),
+        inset 0 1px 3px rgba(255, 255, 255, 0.2);
+    z-index: 20;
 }
 
 .needle-red {
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 80px solid #dc143c;
     position: absolute;
-    top: 0;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    width: 6px;
+    height: 140px;
+    transform: translate(-50%, -100%);
+    background: linear-gradient(to bottom, #dc143c 0%, #8b0000 50%, #660000 100%);
+    clip-path: polygon(50% 0%, 100% 10%, 100% 100%, 0% 100%, 0% 10%);
+    box-shadow: 0 2px 8px rgba(139, 0, 0, 0.4);
+    z-index: 18;
 }
 
 .needle-white {
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 80px solid #fff;
     position: absolute;
-    bottom: 0;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    width: 6px;
+    height: 140px;
+    transform: translate(-50%, 0%);
+    background: linear-gradient(to top, #ffffff 0%, #e0e0e0 50%, #c0c0c0 100%);
+    clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 50% 100%, 0% 90%);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 17;
+}
+
+.needle-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    background: radial-gradient(circle, #c9a86c 0%, #8b7355 100%);
+    border-radius: 50%;
+    border: 2px solid #5d4e37;
+    z-index: 19;
 }
 
 .compass-tabs {
@@ -284,11 +314,128 @@ body {
     display: none;
 }
 
+.compass-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ff9800;
+    animation: pulse 1.5s infinite;
+}
+
+.status-indicator.active {
+    background: #4caf50;
+    animation: none;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.status-text {
+    color: #b0b0b0;
+    font-size: 14px;
+}
+
 .compass-wrapper {
     position: relative;
-    width: 400px;
-    height: 400px;
+    width: 420px;
+    height: 420px;
     margin: 0 auto;
+}
+
+.compass-base {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #8b4513 0%, #654321 50%, #4a2c0f 100%);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 40px rgba(0, 0, 0, 0.5),
+        inset 0 0 60px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.compass-dial {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    z-index: 2;
+    transition: transform 0.1s ease-out;
+}
+
+.compass-rings {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.compass-ring-outer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #c9a86c 0%, #8b7355 70%, #5d4e37 100%);
+    box-shadow: 
+        inset 0 0 30px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(201, 168, 108, 0.3);
+}
+
+.ring-24-mountains {
+    position: absolute;
+    width: 90%;
+    height: 90%;
+    top: 5%;
+    left: 5%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4b896 0%, #c4a67c 50%, #a88b5e 100%);
+    border: 3px solid #8b7355;
+}
+
+.compass-ring-inner {
+    position: absolute;
+    width: 70%;
+    height: 70%;
+    top: 15%;
+    left: 15%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e8d5c4 0%, #d4c4b0 50%, #c0b09c 100%);
+    border: 2px solid #8b7355;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.compass-inner-heaven {
+    position: absolute;
+    width: 40%;
+    height: 40%;
+    top: 30%;
+    left: 30%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f5e6d3 0%, #e8d8c8 50%, #dcc9b8 100%);
+    border: 2px solid #8b7355;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.compass-center {
+    font-size: 48px;
+    color: #8b0000;
+    text-shadow: 0 0 10px rgba(139, 0, 0, 0.3);
 }
 
 .compass-markers {
@@ -300,16 +447,97 @@ body {
 
 .compass-markers .marker {
     position: absolute;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
-    color: #ffd700;
-    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    color: #8b0000;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 }
 
-.compass-markers .north { top: 10px; left: 50%; transform: translateX(-50%); }
-.compass-markers .east { right: 10px; top: 50%; transform: translateY(-50%); }
-.compass-markers .south { bottom: 10px; left: 50%; transform: translateX(-50%); }
-.compass-markers .west { left: 10px; top: 50%; transform: translateY(-50%); }
+.compass-markers .north { top: 5px; left: 50%; transform: translateX(-50%); color: #dc143c; }
+.compass-markers .east { right: 5px; top: 50%; transform: translateY(-50%); }
+.compass-markers .south { bottom: 5px; left: 50%; transform: translateX(-50%); }
+.compass-markers .west { left: 5px; top: 50%; transform: translateY(-50%); }
+
+/* 二十四山刻度 */
+.ring-24-mountains {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.ring-24-mountains .mountain {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 12px;
+    font-weight: bold;
+    color: #8b0000;
+    transform-origin: center;
+}
+
+/* 移动端响应式 */
+@media (max-width: 768px) {
+    .compass-wrapper {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .compass-center {
+        font-size: 36px;
+    }
+    
+    .compass-markers .marker {
+        font-size: 14px;
+    }
+    
+    .ring-24-mountains .mountain {
+        font-size: 10px;
+    }
+    
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .info-item {
+        padding: 12px;
+    }
+    
+    .info-label {
+        font-size: 12px;
+    }
+    
+    .info-value {
+        font-size: 16px;
+    }
+    
+    .compass-status {
+        padding: 8px 15px;
+    }
+    
+    .status-text {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .compass-wrapper {
+        width: 260px;
+        height: 260px;
+    }
+    
+    .compass-center {
+        font-size: 28px;
+    }
+    
+    .ring-24-mountains .mountain {
+        font-size: 9px;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
 .compass-info {
     margin-top: 30px;
@@ -320,8 +548,8 @@ body {
 
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
     margin-bottom: 20px;
 }
 
@@ -2150,38 +2378,86 @@ select option:checked {
     font-size: 14px;
 }
 
-/* 响应式 */
+/* 移动端响应式优化 */
 @media (max-width: 768px) {
     .compass-wrapper {
         width: 300px;
         height: 300px;
     }
     
-    .feature-grid {
+    .compass-center {
+        font-size: 36px;
+    }
+    
+    .compass-markers .marker {
+        font-size: 16px;
+    }
+    
+    .needle-red {
+        height: 100px;
+    }
+    
+    .needle-white {
+        height: 100px;
+    }
+    
+    .info-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
     
-    .nav {
-        justify-content: center;
+    .info-item {
+        padding: 12px;
     }
     
-    .shichen-selector {
-        grid-template-columns: repeat(3, 1fr);
+    .info-label {
+        font-size: 12px;
     }
     
-    .bazhai-selector {
-        grid-template-columns: repeat(2, 1fr);
+    .info-value {
+        font-size: 16px;
     }
     
-    .vip-plans {
+    .compass-status {
+        padding: 8px 15px;
+    }
+    
+    .status-text {
+        font-size: 13px;
+    }
+    
+    .roadmap-grid {
         grid-template-columns: 1fr;
     }
     
-    .yi-ji-grid {
-        grid-template-columns: 1fr;
+    .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
     
-    .profile-stats {
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .compass-wrapper {
+        width: 260px;
+        height: 260px;
+    }
+    
+    .compass-center {
+        font-size: 28px;
+    }
+    
+    .needle-red {
+        height: 85px;
+    }
+    
+    .needle-white {
+        height: 85px;
+    }
+    
+    .info-grid {
         grid-template-columns: 1fr;
     }
 }

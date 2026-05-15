@@ -565,22 +565,36 @@
                     </div>
                     
                     <div id="compass-main" class="compass-tab-content">
+                        <div class="compass-status" id="compass-status">
+                            <div class="status-indicator" id="status-indicator"></div>
+                            <span class="status-text" id="status-text">正在初始化罗盘...</span>
+                        </div>
+                        
                         <div class="compass-wrapper">
-                            <div class="compass-ring"></div>
-                            <div class="compass-outer">
-                                <div class="compass-markers">
-                                    <span class="marker north">北</span>
-                                    <span class="marker east">东</span>
-                                    <span class="marker south">南</span>
-                                    <span class="marker west">西</span>
+                            <div class="compass-base"></div>
+                            <div class="compass-dial" id="compass-dial">
+                                <div class="compass-rings">
+                                    <div class="compass-ring-outer">
+                                        <div class="ring-24-mountains" id="ring-24"></div>
+                                    </div>
+                                    <div class="compass-ring-inner">
+                                        <div class="compass-markers">
+                                            <span class="marker north">北</span>
+                                            <span class="marker east">东</span>
+                                            <span class="marker south">南</span>
+                                            <span class="marker west">西</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="compass-inner-heaven">
+                                    <div class="compass-center">☯</div>
                                 </div>
                             </div>
-                            <div class="compass-inner">
-                                <div class="compass-center">☯</div>
-                            </div>
-                            <div class="compass-needle">
+                            <div class="compass-needle" id="compass-needle">
+                                <div class="needle-base"></div>
                                 <div class="needle-red"></div>
                                 <div class="needle-white"></div>
+                                <div class="needle-center"></div>
                             </div>
                         </div>
                         
@@ -588,31 +602,33 @@
                             <div class="info-grid">
                                 <div class="info-item">
                                     <span class="info-label">当前方位</span>
-                                    <span class="info-value" id="compass-direction">南方</span>
+                                    <span class="info-value" id="compass-direction">--</span>
                                 </div>
                                 <div class="info-item">
                                     <span class="info-label">角度</span>
                                     <span class="info-value" id="compass-angle">0°</span>
                                 </div>
                                 <div class="info-item">
+                                    <span class="info-label">二十四山</span>
+                                    <span class="info-value" id="compass-mountain">--</span>
+                                </div>
+                                <div class="info-item">
                                     <span class="info-label">五行属性</span>
-                                    <span class="info-value" id="compass-element">火</span>
+                                    <span class="info-value" id="compass-element">--</span>
                                 </div>
                                 <div class="info-item">
                                     <span class="info-label">卦象</span>
-                                    <span class="info-value" id="compass-gua">离</span>
+                                    <span class="info-value" id="compass-gua">--</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">方位吉凶</span>
+                                    <span class="info-value" id="compass-fortune">--</span>
                                 </div>
                             </div>
                             
                             <div class="compass-interpretation" id="compass-interpretation">
                                 <h4>方位解读</h4>
-                                <p>南方属火，对应离卦，主光明、文明。此方位利于书房、客厅等采光好的区域。</p>
-                            </div>
-                            
-                            <div class="compass-controls">
-                                <button class="btn-secondary" id="rotate-left">← 逆时针</button>
-                                <button class="btn-secondary" id="reset-compass">重置</button>
-                                <button class="btn-secondary" id="rotate-right">顺时针 →</button>
+                                <p>请移动手机，使罗盘对准您要测量的方位。</p>
                             </div>
                         </div>
                     </div>

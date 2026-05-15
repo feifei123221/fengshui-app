@@ -206,6 +206,34 @@ const DIRECTIONS_DATA = [
     { angle: 315, name: "西北", element: "金", gua: "乾", meaning: "主权威、男主人，宜庄重整洁", color: "#c084fc" }
 ];
 
+// 二十四山数据（专业风水罗盘二十四山向）
+const TWENTY_FOUR_MOUNTAINS = [
+    { angle: 352.5, mountain: "壬", element: "水", luck: "吉", meaning: "天位，主官贵、文昌" },
+    { angle: 7.5, mountain: "子", element: "水", luck: "吉", meaning: "正北，主富贵、丁财" },
+    { angle: 22.5, mountain: "癸", element: "水", luck: "吉", meaning: "帝位，主福禄、长寿" },
+    { angle: 37.5, mountain: "丑", element: "土", luck: "中", meaning: "金库，主收藏、积蓄" },
+    { angle: 52.5, mountain: "艮", element: "土", luck: "吉", meaning: "东北，主靠山、贵人" },
+    { angle: 67.5, mountain: "寅", element: "木", luck: "吉", meaning: "木库，主文昌、事业" },
+    { angle: 82.5, mountain: "甲", element: "木", luck: "吉", meaning: "东方，主健康、成长" },
+    { angle: 97.5, mountain: "卯", element: "木", luck: "吉", meaning: "正东，主文昌、名声" },
+    { angle: 112.5, mountain: "乙", element: "木", luck: "吉", meaning: "木器，主技艺、智慧" },
+    { angle: 127.5, mountain: "辰", element: "土", luck: "中", meaning: "水库，主智慧、谋略" },
+    { angle: 142.5, mountain: "巽", element: "木", luck: "吉", meaning: "东南，主文昌、财运" },
+    { angle: 157.5, mountain: "巳", element: "火", luck: "吉", meaning: "火库，主文明、文采" },
+    { angle: 172.5, mountain: "丙", element: "火", luck: "吉", meaning: "南方，主光明、文明" },
+    { angle: 187.5, mountain: "午", element: "火", luck: "吉", meaning: "正南，主荣耀、事业" },
+    { angle: 202.5, mountain: "丁", element: "火", luck: "吉", meaning: "火星，主文采、贵人" },
+    { angle: 217.5, mountain: "未", element: "土", luck: "中", meaning: "木库，主收藏、积蓄" },
+    { angle: 232.5, mountain: "坤", element: "土", luck: "吉", meaning: "西南，主家庭、女主人" },
+    { angle: 247.5, mountain: "申", element: "金", luck: "吉", meaning: "金库，主官贵、权威" },
+    { angle: 262.5, mountain: "庚", element: "金", luck: "吉", meaning: "西方，主决断、权力" },
+    { angle: 277.5, mountain: "酉", element: "金", luck: "吉", meaning: "正西，主感情、事业" },
+    { angle: 292.5, mountain: "辛", element: "金", luck: "吉", meaning: "金气，主文采、智慧" },
+    { angle: 307.5, mountain: "戌", element: "土", luck: "中", meaning: "火库，主文明、积蓄" },
+    { angle: 322.5, mountain: "乾", element: "金", luck: "吉", meaning: "西北，主权威、事业" },
+    { angle: 337.5, mountain: "亥", element: "水", luck: "吉", meaning: "水库，主智慧、福禄" }
+];
+
 const SCENE_DATA = {
     home: {
         title: "🏠 家居布局",
@@ -468,6 +496,8 @@ class FengShuiApp {
     constructor() {
         this.currentPage = 'home';
         this.compassAngle = 0;
+        this.compassActive = false;
+        this.compassNeedleAngle = 0;
         this.currentMonth = new Date();
         this.userData = {
             isLoggedIn: false,
@@ -509,7 +539,7 @@ class FengShuiApp {
             safeInit('renderKnowledge', this.renderKnowledge);
             safeInit('renderHomeFengshui', () => this.renderHomeFengshui('entrance'));
             safeInit('renderOfficeFengshui', () => this.renderOfficeFengshui('desk'));
-            safeInit('updateCompassDisplay', this.updateCompassDisplay);
+            safeInit('initCompass', this.initCompass);
             safeInit('renderSceneContent', () => this.renderSceneContent('home'));
             safeInit('renderShanshanGrid', this.renderShanshanGrid);
             safeInit('renderMascotsContent', () => this.renderMascotsContent('wealth'));
@@ -622,15 +652,20 @@ class FengShuiApp {
                 });
             });
 
-            // 罗盘功能
-            const compassWrapper = document.querySelector('.compass-wrapper');
-            if (compassWrapper) {
-                compassWrapper.addEventListener('click', () => this.rotateCompass());
+            // 罗盘传感器初始化（页面加载时）
+            const compassPage = document.getElementById('compass');
+            if (compassPage) {
+                // 监听页面切换到罗盘时初始化传感器
+                const originalSwitchPage = this.switchPage.bind(this);
+                this.switchPage = (page) => {
+                    originalSwitchPage(page);
+                    if (page === 'compass') {
+                        this.startCompassSensor();
+                    } else {
+                        this.stopCompassSensor();
+                    }
+                };
             }
-            
-            safeBindById('rotate-left', () => this.rotateCompass(-45));
-            safeBindById('rotate-right', () => this.rotateCompass(45));
-            safeBindById('reset-compass', () => this.resetCompass());
 
             // 测算按钮
             safeBindById('calc-bazi', () => this.calculateBazi());
@@ -823,59 +858,262 @@ class FengShuiApp {
         }
     }
 
-    rotateCompass(delta = 45) {
+    // 初始化罗盘
+    initCompass() {
         try {
-            this.compassAngle = (this.compassAngle + delta + 360) % 360;
-            const needle = document.querySelector('.compass-needle');
-            if (needle) {
-                needle.style.transform = 
-                    `translate(-50%, -50%) rotate(${this.compassAngle}deg)`;
-            }
             this.updateCompassDisplay();
+            this.render24Mountains();
         } catch (error) {
-            console.error('旋转罗盘出错:', error);
+            console.error('初始化罗盘出错:', error);
         }
     }
 
-    resetCompass() {
+    // 渲染二十四山刻度
+    render24Mountains() {
         try {
-            this.compassAngle = 0;
-            const needle = document.querySelector('.compass-needle');
-            if (needle) {
-                needle.style.transform = 
-                    'translate(-50%, -50%) rotate(0deg)';
-            }
-            this.updateCompassDisplay();
+            const ring24 = document.getElementById('ring-24');
+            if (!ring24) return;
+
+            let html = '';
+            TWENTY_FOUR_MOUNTAINS.forEach((mountain, index) => {
+                const angle = index * 15;
+                html += `<span class="mountain" style="transform: rotate(${angle}deg) translate(0, -70px)">${mountain.mountain}</span>`;
+            });
+            ring24.innerHTML = html;
         } catch (error) {
-            console.error('重置罗盘出错:', error);
+            console.error('渲染二十四山出错:', error);
         }
     }
 
+    // 启动罗盘传感器
+    startCompassSensor() {
+        try {
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            
+            // 更新状态显示
+            if (statusIndicator) statusIndicator.classList.add('active');
+            if (statusText) statusText.textContent = '罗盘已激活，请移动手机';
+
+            // 检查设备方向传感器支持
+            if ('DeviceOrientationEvent' in window && 
+                typeof DeviceOrientationEvent.requestPermission === 'function') {
+                // iOS 13+ 需要用户授权
+                DeviceOrientationEvent.requestPermission()
+                    .then(response => {
+                        if (response === 'granted') {
+                            this.compassActive = true;
+                            window.addEventListener('deviceorientation', this.handleDeviceOrientation.bind(this));
+                        } else {
+                            this.showToast('需要传感器权限才能使用罗盘');
+                            this.fallbackCompass();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('传感器权限请求失败:', error);
+                        this.fallbackCompass();
+                    });
+            } else if ('DeviceOrientationEvent' in window) {
+                // 其他支持设备方向的设备
+                this.compassActive = true;
+                window.addEventListener('deviceorientation', this.handleDeviceOrientation.bind(this));
+            } else {
+                // 不支持设备方向传感器
+                this.showToast('您的设备不支持方向传感器');
+                this.fallbackCompass();
+            }
+        } catch (error) {
+            console.error('启动罗盘传感器出错:', error);
+            this.fallbackCompass();
+        }
+    }
+
+    // 停止罗盘传感器
+    stopCompassSensor() {
+        try {
+            if (this.compassActive) {
+                window.removeEventListener('deviceorientation', this.handleDeviceOrientation.bind(this));
+                this.compassActive = false;
+            }
+            
+            // 更新状态显示
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            if (statusIndicator) statusIndicator.classList.remove('active');
+            if (statusText) statusText.textContent = '罗盘已暂停';
+        } catch (error) {
+            console.error('停止罗盘传感器出错:', error);
+        }
+    }
+
+    // 处理设备方向变化
+    handleDeviceOrientation(event) {
+        try {
+            let heading = 0;
+            
+            // 使用 alpha (指南针方向) 或 webkitCompassHeading
+            if (event.webkitCompassHeading !== undefined) {
+                // iOS 设备
+                heading = event.webkitCompassHeading;
+            } else if (event.alpha !== undefined) {
+                // 其他设备
+                heading = 360 - event.alpha;
+            } else {
+                return;
+            }
+            
+            // 标准化角度
+            this.compassAngle = ((heading % 360) + 360) % 360;
+            this.compassNeedleAngle = -this.compassAngle;
+            
+            this.updateCompassDisplay();
+            this.animateCompass();
+        } catch (error) {
+            console.error('处理设备方向出错:', error);
+        }
+    }
+
+    // 备用罗盘（使用鼠标/触摸模拟）
+    fallbackCompass() {
+        try {
+            const statusText = document.getElementById('status-text');
+            if (statusText) statusText.textContent = '触摸罗盘手动调整';
+            
+            // 添加触摸/鼠标控制
+            const compassWrapper = document.querySelector('.compass-wrapper');
+            if (compassWrapper) {
+                let isDragging = false;
+                
+                compassWrapper.style.cursor = 'pointer';
+                
+                const startDrag = (e) => {
+                    isDragging = true;
+                    updateAngle(e);
+                };
+                
+                const onDrag = (e) => {
+                    if (isDragging) updateAngle(e);
+                };
+                
+                const endDrag = () => {
+                    isDragging = false;
+                };
+                
+                const updateAngle = (e) => {
+                    const rect = compassWrapper.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    
+                    let clientX, clientY;
+                    if (e.touches) {
+                        clientX = e.touches[0].clientX;
+                        clientY = e.touches[0].clientY;
+                    } else {
+                        clientX = e.clientX;
+                        clientY = e.clientY;
+                    }
+                    
+                    const deltaX = clientX - centerX;
+                    const deltaY = clientY - centerY;
+                    
+                    let angle = Math.atan2(deltaX, deltaY) * (180 / Math.PI);
+                    this.compassAngle = ((-angle + 180) % 360 + 360) % 360;
+                    this.compassNeedleAngle = -this.compassAngle;
+                    
+                    this.updateCompassDisplay();
+                    this.animateCompass();
+                };
+                
+                // 绑定事件
+                compassWrapper.addEventListener('mousedown', startDrag);
+                document.addEventListener('mousemove', onDrag);
+                document.addEventListener('mouseup', endDrag);
+                
+                compassWrapper.addEventListener('touchstart', startDrag);
+                document.addEventListener('touchmove', onDrag);
+                document.addEventListener('touchend', endDrag);
+            }
+        } catch (error) {
+            console.error('备用罗盘初始化出错:', error);
+        }
+    }
+
+    // 动画罗盘
+    animateCompass() {
+        try {
+            // 旋转整个罗盘盘面（二十四山）
+            const compassDial = document.getElementById('compass-dial');
+            if (compassDial) {
+                compassDial.style.transform = `rotate(${this.compassAngle}deg)`;
+            }
+            
+            // 磁针保持指向北方（不旋转或轻微调整）
+            const compassNeedle = document.getElementById('compass-needle');
+            if (compassNeedle) {
+                compassNeedle.style.transform = `rotate(${this.compassNeedleAngle}deg)`;
+            }
+        } catch (error) {
+            console.error('动画罗盘出错:', error);
+        }
+    }
+
+    // 更新罗盘显示
     updateCompassDisplay() {
         try {
-            const normalizedAngle = (360 - this.compassAngle) % 360;
+            const normalizedAngle = this.compassAngle;
             const direction = this.getDirectionByAngle(normalizedAngle);
+            const mountain = this.getMountainByAngle(normalizedAngle);
             
             const el1 = document.getElementById('compass-direction');
             if (el1) el1.textContent = direction.name;
             
             const el2 = document.getElementById('compass-angle');
-            if (el2) el2.textContent = `${this.compassAngle}°`;
+            if (el2) el2.textContent = `${Math.round(normalizedAngle)}°`;
             
-            const el3 = document.getElementById('compass-element');
-            if (el3) el3.textContent = direction.element;
+            const el3 = document.getElementById('compass-mountain');
+            if (el3) el3.textContent = mountain.mountain;
             
-            const el4 = document.getElementById('compass-gua');
-            if (el4) el4.textContent = direction.gua;
+            const el4 = document.getElementById('compass-element');
+            if (el4) el4.textContent = direction.element;
             
-            const el5 = document.getElementById('compass-interpretation');
-            if (el5) el5.innerHTML = `
+            const el5 = document.getElementById('compass-gua');
+            if (el5) el5.textContent = direction.gua;
+            
+            const el6 = document.getElementById('compass-fortune');
+            if (el6) {
+                el6.textContent = mountain.luck === '吉' ? '大吉' : '中平';
+                el6.style.color = mountain.luck === '吉' ? '#4ade80' : '#ffd700';
+            }
+            
+            const el7 = document.getElementById('compass-interpretation');
+            if (el7) el7.innerHTML = `
                 <h4>方位解读</h4>
-                <p>${direction.name}属${direction.element}，对应${direction.gua}卦，${direction.meaning}</p>
+                <p><strong>${direction.name}</strong>属<strong>${direction.element}</strong>，对应<strong>${direction.gua}</strong>卦，${direction.meaning}</p>
+                <p style="margin-top: 10px;"><strong>二十四山：${mountain.mountain}</strong> - ${mountain.meaning}</p>
             `;
         } catch (error) {
             console.error('更新罗盘显示出错:', error);
         }
+    }
+
+    // 根据角度获取二十四山
+    getMountainByAngle(angle) {
+        let closest = TWENTY_FOUR_MOUNTAINS[0];
+        let minDiff = 360;
+        
+        TWENTY_FOUR_MOUNTAINS.forEach(mountain => {
+            const diff = Math.min(
+                Math.abs(angle - mountain.angle),
+                Math.abs(angle - mountain.angle - 360),
+                Math.abs(angle - mountain.angle + 360)
+            );
+            if (diff < minDiff) {
+                minDiff = diff;
+                closest = mountain;
+            }
+        });
+        
+        return closest;
     }
 
     getDirectionByAngle(angle) {
